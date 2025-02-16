@@ -1,12 +1,9 @@
 -- src/scenes/test-scene-1.lua
-local lovr = require "lovr"
 local tiny = require "lib.tiny"
 local Game = {}
 
 -- Initialize scene
 function Game.init()
-  print("Game Scene Loaded")
-
   -- Create a new ECS world
   Game.world = tiny.world()
 
@@ -44,6 +41,11 @@ function Game.draw(pass)
       pass:sphere(entity.position.x, entity.position.y, entity.position.z, 0.2)
     end
   end
+end
+
+-- Exit scene (cleanup)
+function Game.exit()
+  print("exiting scene 1")
 end
 
 return Game
