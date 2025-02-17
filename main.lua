@@ -17,8 +17,7 @@ function lovr.update(dt)
   -- update the scene every frame
   Scene.update(dt)
 
-  -- If Escape is pressed quit the game
-  if Input.isPressed("quit") then
+  if Input.getValue("quit") then
     lovr.event.quit()
   end
 end
