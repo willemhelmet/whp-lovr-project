@@ -73,6 +73,7 @@ function Input.getAxis(device, axis)
   return lovr.headset.getAxis(device, axis)
 end
 
+-- WHP: This returns a boolean... is that what i want?
 function Input.isDown(device, button)
   return lovr.headset.isDown(device, button)
 end
