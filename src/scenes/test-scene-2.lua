@@ -1,6 +1,8 @@
 -- src/scenes/test-scene-2
+
 local tiny = require 'lib.tiny'
 local lovr = require 'lovr'
+
 local Game = {}
 
 -- Initialize scene
@@ -11,18 +13,18 @@ function Game.init()
   -- Define my first entity
   local spinningCube = {
     position = { x = 0, y = 1.5, z = -2 },
-    rotationAngle = { x = 0, y = 0, z = 0 },
+    rotation = { x = 0, y = 0, z = 0 },
     scale = 0.5,
-    renderable = true
+    renderable = true -- WHP: Do we really need this?
   }
 
   -- define my own system
   local mySystem = tiny.processingSystem()
-  mySystem.filter = tiny.requireAll("position", "rotationAngle")
+  mySystem.filter = tiny.requireAll("position", "rotation")
 
   function mySystem:process(e, dt)
-    e.rotationAngle.x = math.sin(lovr.headset.getTime())
-    e.rotationAngle.y = math.cos(lovr.headset.getTime() * 0.25)
+    e.rotation.x = math.sin(lovr.headset.getTime())
+    e.rotation.y = math.cos(lovr.headset.getTime() * 0.25)
   end
 
   -- add entity and system to game world
@@ -37,7 +39,7 @@ end
 -- Render ECS Entities
 function Game.draw(pass)
   for _, entity in ipairs(Game.world.entities) do
-    if entity.renderable then
+    if entity.renderable then -- WHP: Do we really need this?
       pass:setColor(1, 1, 1)
       pass:cube(
         entity.position.x,
@@ -45,9 +47,9 @@ function Game.draw(pass)
         entity.position.z,
         entity.scale,
         lovr.headset.getTime(),
-        entity.rotationAngle.x,
-        entity.rotationAngle.y,
-        entity.rotationAngle.z,
+        entity.rotation.x,
+        entity.rotation.y,
+        entity.rotation.z,
         'line')
     end
   end

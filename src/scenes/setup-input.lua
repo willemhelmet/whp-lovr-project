@@ -1,20 +1,13 @@
 -- /src/scenes/setup-input.lua
 local SetupInput = {}
 local Input = require 'src.core.input'
-local pretty = require 'lib.pl.pretty'
-
-function SetupInput.init()
-  -- Input.onInputChanged(function(action, newValue, oldValue)
-  --   print(action)
-  -- end)
-end
+local Grid = require 'src.entities.grid'
+local Player = require 'src.entities.player'
 
 local leftGrip
 local rightGrip
 local leftTrigger
 local rightTrigger
-local rightThumbstickX
-local rightThumbstickY
 local aButton
 local bButton
 local xButton
@@ -51,6 +44,7 @@ function SetupInput.update(dt)
 end
 
 function SetupInput.draw(pass)
+  pass:setShader()
   pass:setColor(1, 1, 1)
   pass:text("left controller", -2, 4.5, -5, .5)
   pass:text("trigger: " .. leftTrigger, -2, 4.0, -5, .5)
@@ -65,6 +59,7 @@ function SetupInput.draw(pass)
   pass:text("B: " .. bButton, 2, 3.0, -5, .5)
   pass:text("A: " .. aButton, 2, 2.5, -5, .5)
   pass:sphere(2 + thumbstickRight.x, 1 + thumbstickRight.y, -5, rightSphereScale)
+  Grid.draw(pass)
 end
 
 return SetupInput
