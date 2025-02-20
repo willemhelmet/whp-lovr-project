@@ -7,6 +7,7 @@ local Settings = require 'config.settings'
 local PlayerMotionSystem = tiny.processingSystem()
 PlayerMotionSystem.filter = tiny.requireAll("Pose")
 
+
 -- Store previous velocity as a static variable
 local previousVelocity = lovr.math.newVec3(0, 0, 0)
 -- Keep snapTurn flag outside of update
@@ -34,8 +35,8 @@ function PlayerMotionSystem:process(e, dt)
     local turnAmount = Input.getValue('turn').x
     if math.abs(turnAmount) > Settings.snapTurnThreshold and not hasTurned then
       local snapAngle = Settings.snapTurnAngle
-      local turnDirection = turnAmount > 0 and -1 or -1
-      local rotationAngle = turnDirection * snapAngle
+      local turnDirection = turnAmount > 0 and 1 or -1
+      local rotationAngle = -turnDirection * snapAngle
       local rotationQuat = lovr.math.quat(rotationAngle, 0, 1, 0)
       pose:rotate(rotationQuat)
       hasTurned = true
