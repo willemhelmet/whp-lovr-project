@@ -5,8 +5,7 @@ local Input = require 'src.core.input'
 local Settings = require 'config.settings'
 
 local PlayerMotionSystem = tiny.processingSystem()
-PlayerMotionSystem.filter = tiny.requireAll("Pose")
-
+PlayerMotionSystem.filter = tiny.requireAll("Pose", "Velocity")
 
 -- Store previous velocity as a static variable
 local previousVelocity = lovr.math.newVec3(0, 0, 0)
