@@ -3,13 +3,14 @@ local tiny = require 'lib.tiny'
 local lovr = require 'lovr'
 local Input = require 'src.core.input'
 local Settings = require 'config.settings'
-local quat = require 'lib.cpml.modules.quat'
 
 local PlayerMotionSystem = tiny.processingSystem()
 PlayerMotionSystem.filter = tiny.requireAll("Pose")
 
 -- Store previous velocity as a static variable
 local previousVelocity = lovr.math.newVec3(0, 0, 0)
+-- Keep snapTurn flag outside of update
+local hasTurned = false
 
 function PlayerMotionSystem:process(e, dt)
   local pose = e.Pose
@@ -19,17 +20,28 @@ function PlayerMotionSystem:process(e, dt)
   end
   local velocity = e.Velocity
 
-  -- Handle smooth turning
+  -- Handle turning
   if Settings.turnStyle == "smooth" then
-    local turnAmount = Input.getValue('smoothTurn')
-    if math.abs(turnAmount.x) > Settings.deadzone then
-      local turnSpeed = e.turningSpeed or (2 * math.pi * 1 / 6)
-      local rotationAngle = -turnAmount.x * turnSpeed * dt
+    -- returns a number from -1 to 1
+    local turnAmount = Input.getValue('turn').x
+    if math.abs(turnAmount) > Settings.deadzone then
+      local turnSpeed = Settings.smoothTurnSpeed or (2 * math.pi * 1 / 6)
+      local rotationAngle = -turnAmount * turnSpeed * dt
       local rotationQuat = lovr.math.quat(rotationAngle, 0, 1, 0)
       pose:rotate(rotationQuat)
     end
   elseif Settings.turnStyle == "snap" then
-    -- TODO:
+    local turnAmount = Input.getValue('turn').x
+    if math.abs(turnAmount) > Settings.snapTurnThreshold and not hasTurned then
+      local snapAngle = Settings.snapTurnAngle
+      local turnDirection = turnAmount > 0 and 1 or -1
+      local rotationAngle = -turnDirection * snapAngle
+      local rotationQuat = lovr.math.quat(rotationAngle, 0, 1, 0)
+      pose:rotate(rotationQuat)
+      hasTurned = true
+    elseif math.abs(turnAmount) < Settings.deadzone then -- prevent multiple turns
+      hasTurned = false
+    end
   end
 
   -- Get movement input and head direction

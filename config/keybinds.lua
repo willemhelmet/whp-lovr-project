@@ -38,7 +38,7 @@ Keybinds.thumbstickRight = {
   }
 }
 
-Keybinds.smoothTurn = {
+Keybinds.turn = {
   type = "vector2",
   bindings = {
     {
