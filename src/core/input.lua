@@ -1,17 +1,4 @@
 -- scr/core/input.lua
---[[
---
---  What i want here is a system that can handle a large variety of inputs
---  from various modalities.
---  For instance, I want to get all types of button input from:
---    VR controllers,
---    Hand tracking,
---    Keyboard,
---    Mouse
---  I think for the time being I should focus only on the keyboard, and then VR controllers
---
---
---]]
 local lovr = require 'lovr'
 local tablex = require 'lib.pl.tablex'
 local Keybinds = require 'config.keybinds'
@@ -128,6 +115,11 @@ function Input.isDown(device, button)
   else
     return lovr.headset.isDown(device, button)
   end
+end
+
+-- WHP: Is this the best place for this function call?
+function Input.getHands()
+  return lovr.headset.getHands()
 end
 
 return Input

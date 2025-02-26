@@ -23,6 +23,8 @@ function PlayerMotionSystem:process(e, dt)
   -- Handle turning
   if Settings.turnStyle == "smooth" then
     -- returns a number from -1 to 1
+    -- WHP: I'm not in love with the fact that 'turn' is a vector2 that i
+    --      need to extract the correct axis from
     local turnAmount = Input.getValue('turn').x
     if math.abs(turnAmount) > Settings.deadzone then
       local turnSpeed = Settings.smoothTurnSpeed or (2 * math.pi * 1 / 6)
@@ -31,6 +33,8 @@ function PlayerMotionSystem:process(e, dt)
       pose:rotate(rotationQuat)
     end
   elseif Settings.turnStyle == "snap" then
+    -- WHP: I'm not in love with the fact that 'turn' is a vector2 that i
+    --      need to extract the correct axis from
     local turnAmount = Input.getValue('turn').x
     if math.abs(turnAmount) > Settings.snapTurnThreshold and not hasTurned then
       local snapAngle = Settings.snapTurnAngle
