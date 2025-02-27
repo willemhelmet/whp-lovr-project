@@ -1,15 +1,13 @@
 -- src/scenes/learn-physics.lua
 
--- core
-local Input = require 'src.core.input'
-
 --lib
 local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
-local tablex = require 'lib.pl.tablex'
+local pretty = require 'lib.pl.pretty'
 
 -- entities
 local Grid = require 'src.entities.grid'
+local Controller = require 'src.entities.controller'
 
 -- systems
 local ControllerSystem = require 'src.systems.controller-system'
@@ -41,8 +39,10 @@ function LearnPhysics:init()
 end
 
 function LearnPhysics.update(dt)
+  -- Update ECS
   LearnPhysics.tinyWorld:update(dt)
 
+  -- update controller position
   for i, hand in ipairs(ControllerSystem.getHands()) do
     if not controllerBoxes[i] then
       controllerBoxes[i] = PhysicsSystem.newBoxCollider(
@@ -51,8 +51,9 @@ function LearnPhysics.update(dt)
         lovr.math.vec3(.25, .25, .25)
       )
       controllerBoxes[i]:setKinematic(true)
+      LearnPhysics.tinyWorld:addEntity(Controller)
     end
-    controllerBoxes[i]:setPose(ControllerSystem.getPose(hand))
+    controllerBoxes[i]:setPose(table.unpack(Controller.Pose[hand]))
   end
 end
 

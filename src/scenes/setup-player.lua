@@ -31,8 +31,8 @@ function SetupPlayerScene.draw(pass)
   pass:transform(mat4(Player.Pose):invert())
 
   -- HACK: I do not know if this is functional or not, currently in Chi
-  pass:draw(Controller.Models.left, 1.0, Controller.Poses.left:getOrientation())
-  pass:draw(Controller.Models.right, 1.0, Controller.Poses.right:getOrientation())
+  pass:draw(Controller.Model.left, 1.0, Controller.Pose.left:getOrientation())
+  pass:draw(Controller.Model.right, 1.0, Controller.Pose.right:getOrientation())
 
   Grid.draw(pass)
   pass:setShader()

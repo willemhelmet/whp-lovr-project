@@ -21,6 +21,8 @@ function PlayerMotionSystem:process(e, dt)
   local velocity = e.Velocity
 
   -- Handle turning
+  -- TODO: Turning currently breaks when the user is not above the origin of
+  --       their tracking context. need to account for headset position.
   if Settings.turnStyle == "smooth" then
     -- returns a number from -1 to 1
     -- WHP: I'm not in love with the fact that 'turn' is a vector2 that i
