@@ -18,7 +18,7 @@ local PhysicsSystem = require 'src.systems.physics-system'
 local ControllerRenderingSystem = require 'src.systems.controller-rendering-system'
 
 local NewtonsCradle = {}
-NewtonsCradle.tiny = tiny.world(PhysicsSystem, ControllerSystem)
+NewtonsCradle.tiny = tiny.world(PhysicsSystem, ControllerSystem, ControllerRenderingSystem)
 
 local frame
 local framePose
@@ -51,7 +51,6 @@ function NewtonsCradle.init()
     )
     ball:setRestitution(1.0)
     table.insert(balls, ball)
-    -- TODO: I want to visualize these joints
     lovr.physics.newDistanceJoint(frame, ball, vec3(x, 2, -2 + 0.25), vec3(x, 1, -2))
     lovr.physics.newDistanceJoint(frame, ball, vec3(x, 2, -2 - 0.25), vec3(x, 1, -2))
     ballCounter = ballCounter + 1
@@ -62,13 +61,13 @@ end
 
 function NewtonsCradle.update(dt)
   NewtonsCradle.tiny:update(dt)
-  -- TODO: Make this a entity
+  -- TODO: Make this a entity... should it be in our controller?
   for i, hand in ipairs(ControllerSystem.getHands()) do
     if not controllerBoxes[i] then
       controllerBoxes[i] = PhysicsSystem.newBoxCollider(
         hand,
         lovr.math.vec3(0, 0, 0),
-        lovr.math.vec3(.25, .25, .25)
+        lovr.math.vec3(0.25, 0.25, 0.25)
       )
       controllerBoxes[i]:setKinematic(true)
       NewtonsCradle.tiny:addEntity(Controller)
@@ -88,25 +87,7 @@ function NewtonsCradle.draw(pass)
     pass:sphere(position, radius)
   end
 
-  -- pass:setColor(0, 0, 1)
   ControllerRenderingSystem.draw(pass)
-
-
-  -- example showing how to render controller using local assets
-  -- for i, hand in ipairs(ControllerSystem.getHands()) do
-  --   local x, y, z = controllerBoxes[i]:getPosition()
-  --   pass:draw(Controller.Model[hand], x, y, z)
-  -- end
-  -- pass:draw(Controller.Model.left, -4, 1.5, -3)
-  -- pass:draw(Controller.Model.right, -3.5, 1.5, -3)
-
-  -- box hands
-  -- for _, box in ipairs(controllerBoxes) do
-  --   local x, y, z = box:getPosition()
-  --   pass:cube(x, y, z, .25, box:getOrientation())
-  -- end
-
-  -- ControllerRenderingSystem.draw(pass)
 
   pass:setColor(1, 1, 1)
   pass:text('newtons cradle', 0, 1.5, -4, 0.35)

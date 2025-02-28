@@ -2,11 +2,14 @@
 
 -- lib
 local lovr = require 'lovr'
+local tiny = require 'lib.tiny'
+local pretty = require 'lib.pl.pretty'
 
 -- core
 local Input = require 'src.core.input'
 
-local ControllerRenderingSystem = {}
+local ControllerRenderingSystem = tiny.processingSystem()
+ControllerRenderingSystem.filter = tiny.requireAll("Pose", "Collider")
 
 ControllerRenderingSystem.Models = {
   left = lovr.graphics.newModel("/assets/models/quest-left.glb"),
@@ -14,20 +17,22 @@ ControllerRenderingSystem.Models = {
 }
 
 function ControllerRenderingSystem.draw(pass)
-  -- taken from docs example
+  local controller = ControllerRenderingSystem.entities[1]
+
+
   for hand, model in pairs(ControllerRenderingSystem.Models) do
-    if lovr.headset.isTracked(hand) then
-      pass:draw(model, lovr.math.mat4(lovr.headset.getPose(hand)))
+    if lovr.headset.isTracked(hand) and controller ~= nil then
+      --WHP: I don't really like this currently. I think it would be better like
+      --     pose.x, pose.y, pose.z, 1, pose.angle, pose.ax, pose.ay, pose.az
+      --     or maybe
+      --     table.unpack(pose.position), 1, table.unpack(pose.orientation)
+      local pose = controller.Pose[hand]
+      pass:draw(model, pose[1], pose[2], pose[3], 1, pose[4], pose[5], pose[6], pose[7])
+      if controller.shouldShowCollider == true then
+        pass:cube(pose[1], pose[2], pose[3], 0.25, 0, 0, 0, 0, 'line')
+      end
     end
   end
-  -- example showing how to render controller
-  -- for i, hand in ipairs(ControllerSystem.getHands()) do
-  --   local pose = Controller.Pose[hand]
-  --   local x, y, z = pose.x, pose.y, pose.z
-  --   pass:draw(Controller.Model[hand], x, y, z)
-  -- end
-  -- pass:draw(Controller.Model.left, -4, 1.5, -3)
-  -- pass:draw(Controller.Model.right, -3.5, 1.5, -3)
 end
 
 return ControllerRenderingSystem
