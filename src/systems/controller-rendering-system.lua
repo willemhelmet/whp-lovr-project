@@ -9,7 +9,7 @@ local pretty = require 'lib.pl.pretty'
 local Input = require 'src.core.input'
 
 local ControllerRenderingSystem = tiny.processingSystem()
-ControllerRenderingSystem.filter = tiny.requireAll("Pose", "Collider")
+ControllerRenderingSystem.filter = tiny.requireAll("Transform", "Controller")
 
 ControllerRenderingSystem.Models = {
   left = lovr.graphics.newModel("/assets/models/quest-left.glb"),
@@ -18,8 +18,6 @@ ControllerRenderingSystem.Models = {
 
 function ControllerRenderingSystem.draw(pass)
   local controller = ControllerRenderingSystem.entities[1]
-
-
   for hand, model in pairs(ControllerRenderingSystem.Models) do
     if lovr.headset.isTracked(hand) and controller ~= nil then
       --WHP: I don't really like this currently. I think it would be better like

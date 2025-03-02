@@ -1,40 +1,40 @@
 -- src/entities/grid.lua
 local lovr = require 'lovr'
-local Grid = {}
 
-Grid.data = {
-  position = { x = 0, y = 0, z = 0 },
-  rotation = { w = -math.pi / 2, x = 1, y = 0, z = 0 },
-  scale = { x = 200, y = 200 },
-  lineWidth = 0.005,
-  backgroundColor = { r = 0.05, g = 0.05, b = 0.05 },
-  foregroundColor = { r = 0.5, g = 0.5, b = 0.5 }
+-- components
+local TransformComponent = require 'src.components.transform-component'
+local MeshComponent = require 'src.components.mesh-component'
+local MaterialComponent = require 'src.components.material-component'
+local RenderingComponent = require 'src.components.rendering-component'
+
+local Grid = {
+  Transform = nil,
+  Mesh = nil,
+  Material = nil
 }
-Grid.vert = lovr.filesystem.newBlob('assets/shaders/grid/grid.vert')
-Grid.frag = lovr.filesystem.newBlob('assets/shaders/grid/grid.frag')
-Grid.shader = lovr.graphics.newShader(Grid.vert, Grid.frag)
 
-function Grid.draw(pass)
-  pass:setShader(Grid.shader)
-  pass:send('lineWidth', Grid.data.lineWidth)
-  pass:send('background', {
-    Grid.data.backgroundColor.r,
-    Grid.data.backgroundColor.g,
-    Grid.data.backgroundColor.b
-  })
-  pass:send('foreground', {
-    Grid.data.foregroundColor.r, Grid.data.foregroundColor.g, Grid.data.foregroundColor.b })
-  pass:plane(
-    Grid.data.position.x,
-    Grid.data.position.y,
-    Grid.data.position.z,
-    Grid.data.scale.x,
-    Grid.data.scale.y,
-    Grid.data.rotation.w,
-    Grid.data.rotation.x,
-    Grid.data.rotation.y,
-    Grid.data.rotation.z
-  )
+function Grid.new()
+  local vert = lovr.filesystem.newBlob('assets/shaders/grid/grid.vert')
+  local frag = lovr.filesystem.newBlob('assets/shaders/grid/grid.frag')
+  local shader = lovr.graphics.newShader(vert, frag)
+  return {
+    Transform = TransformComponent.new(
+      0, 0, -2,
+      0, 0, 0, 0,
+      200,
+      200,
+      200
+    ),
+    Mesh = RenderingComponent.new('/assets/models/primitives/plane.glb'),
+    Material = MaterialComponent.new(
+      shader,
+      {
+        lineWidth = 0.005,
+        background = { 0.05, 0.05, 0.05 },
+        foreground = { 0.5, 0.5, 0.5 }
+      }
+    )
+  }
 end
 
 return Grid

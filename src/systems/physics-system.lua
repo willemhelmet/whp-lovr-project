@@ -5,18 +5,57 @@ local tiny = require 'lib.tiny'
 local pretty = require 'lib.pl.pretty'
 
 local PhysicsSystem = tiny.processingSystem()
--- PhysicsSystem.filter = tiny.requireAll(PhysicsComponent)
+PhysicsSystem.filter = tiny.requireAll(Physics, Transform)
 
 local world = lovr.physics.newWorld()
 local objects = {}
+
 
 function PhysicsSystem:preProcess(dt)
   world:update(dt)
 end
 
-function PhysicsSystem:process(e, dt)
-  print(pretty.write(e))
+function PhysicsSystem:process(entity, dt)
+  local physics = entity.Physics
+  local transform = entity.Transform
+
+  -- 1. Create Physics Body if it doesn't exist
+  if not physics.body then
+    -- physics.body = lovr.physics.newBody(physics.isStatic and "static" or "dynamic")
+    -- physics.shape = lovr.physics.newBoxShape(1, 1, 1) -- Example: Box shape
+    -- physics.body:setShape(physics.shape)
+    -- physics.body:setMass(physics.mass)
+    -- physics.body:setRestitution(physics.restitution)
+    -- physics.body:setFriction(physics.friction)
+    -- physics.body:setPosition(transform.position[1], transform.position[2], transform.position[3])
+    -- physics.body:setOrientation(transform.orientation)
+    -- lovr.physics.add(physics.body) -- Add body to the physics world
+  end
+
+  -- 2. Apply Velocities
+  -- physics.body:setLinearVelocity(physics.linearVelocity[1], physics.linearVelocity[2], physics.linearVelocity[3])
+  -- physics.body:setAngularVelocity(physics.angularVelocity[1], physics.angularVelocity[2], physics.angularVelocity[3])
+
+  -- 3. Update Transform Component
+  -- local pos = physics.body:getPosition()
+  -- local ori = physics.body:getOrientation()
+  -- transform.position[1], transform.position[2], transform.position[3] = pos:unpack()
+  -- transform.orientation = ori
+
+  -- 4. Optionally, apply forces or torques based on other components
+  -- Example: If entity has a ForceComponent, apply it to the body.
+  -- if entity.ForceComponent then
+  --   local force = entity.ForceComponent.force
+  --   physics.body:applyForce(force[1], force[2], force[3])
+  --   entity.ForceComponent = nil -- Remove the ForceComponent after applying
+  -- end
 end
+
+-- function PhysicsSystem:onAdd(e)
+-- end
+
+-- function PhysicsSystem:onRemove(e)
+-- end
 
 function PhysicsSystem.getWorld()
   return world

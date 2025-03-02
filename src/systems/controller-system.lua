@@ -6,7 +6,7 @@ local pretty = require 'lib.pl.pretty'
 local tiny = require 'lib.tiny'
 
 local ControllerSystem = tiny.processingSystem()
-ControllerSystem.filter = tiny.requireAll("Pose", "Collider")
+ControllerSystem.filter = tiny.requireAll("Transform", "Physics")
 
 ControllerSystem.Model = {
   left = lovr.graphics.newModel("/assets/models/controller-left.glb"),
@@ -15,11 +15,9 @@ ControllerSystem.Model = {
 
 function ControllerSystem:process(e, dt)
   for _, hand in ipairs(lovr.headset.getHands()) do
-    -- WHP: Right now we are saving pose data like this
-    --      { x, y, z, angle, ax, ay, az}
-    --      But I do not think this is best, maybe this is better
-    --      {x = x, y=y, z=z, angle=angle, etc..}
     e.Pose[hand:sub(6)] = { lovr.headset.getPose(hand) }
+    e.Transform.position = { lovr.headset.getPosition(hand) }
+    e.Transform.orientation = { lovr.headset.getOrientation(hand) }
   end
 end
 
@@ -33,12 +31,6 @@ end
 
 function ControllerSystem.getPose(device)
   return lovr.headset.getPose(device)
-end
-
-function ControllerSystem.draw(pass)
-  for _, hand in ipairs(lovr.headset.getHands()) do
-    pass:draw(model, pose.x, pose.y, pose.z)
-  end
 end
 
 function ControllerSystem.isTracked(device)
