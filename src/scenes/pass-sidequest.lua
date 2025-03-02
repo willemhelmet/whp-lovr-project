@@ -5,22 +5,28 @@ local tiny = require 'lib.tiny'
 
 -- entities
 local Grid = require 'src.entities.grid'
+local Controller = require 'src.entities.controller'
 
 -- Systems
 local ExampleRenderSystem = require 'src.systems.example-render-system'
+local MotionTrackingSystem = require 'src.systems.motion-tracking-system'
 
 -- Components
-local RenderingComponent = require 'src.components.rendering-component'
+local MeshComponent = require 'src.components.mesh-component'
 local TransformComponent = require 'src.components.transform-component'
 local MaterialComponent = require 'src.components.material-component'
+local MotionTrackingComponent = require 'src.components.motion-tracking-component'
 
 -- World
 local PassSidequest = {}
-PassSidequest.world = tiny.world(ExampleRenderSystem)
+PassSidequest.world = tiny.world(ExampleRenderSystem, MotionTrackingSystem)
 
 local balls = {}
 
 function PassSidequest.init()
+  -- Controllers
+  PassSidequest.world:addEntity(Controller.new('left'))
+  PassSidequest.world:addEntity(Controller.new('right'))
   -- Grid
   PassSidequest.world:addEntity(Grid.new())
 
@@ -31,8 +37,8 @@ function PassSidequest.init()
     local z = -2
     local ball = {
       Transform = TransformComponent.new(x, y, z, 0, 0, 0, 0, 1, 1, 1),
-      Mesh = RenderingComponent.new("/assets/models/controller-right.glb"),
-      Material = MaterialComponent.new(nil, {})
+      Mesh = MeshComponent.new("/assets/models/controller-right.glb"),
+      Material = MaterialComponent.new(nil, {}),
     }
     balls[i] = ball
     PassSidequest.world:addEntity(ball)

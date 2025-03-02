@@ -5,7 +5,6 @@ local lovr = require 'lovr'
 local TransformComponent = require 'src.components.transform-component'
 local MeshComponent = require 'src.components.mesh-component'
 local MaterialComponent = require 'src.components.material-component'
-local RenderingComponent = require 'src.components.rendering-component'
 
 local Grid = {
   Transform = nil,
@@ -18,14 +17,15 @@ function Grid.new()
   local frag = lovr.filesystem.newBlob('assets/shaders/grid/grid.frag')
   local shader = lovr.graphics.newShader(vert, frag)
   return {
+    Grid = {},
     Transform = TransformComponent.new(
-      0, 0, -2,
+      0, 0, 0,
       0, 0, 0, 0,
       200,
       200,
       200
     ),
-    Mesh = RenderingComponent.new('/assets/models/primitives/plane.glb'),
+    Mesh = MeshComponent.new('/assets/models/primitives/plane.glb'),
     Material = MaterialComponent.new(
       shader,
       {
