@@ -6,6 +6,7 @@ local TransformComponent = {
   scale = { 1, 1, 1 }           -- x, y, z
 }
 
+-- TODO: Turn the inputs into a vec3, a quat, and a vec3. easier to understand at a glance
 function TransformComponent.new(tx, ty, tz, angle, ax, ay, az, sx, sy, sz)
   return {
     position = { tx, ty, tz },

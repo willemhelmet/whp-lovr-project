@@ -5,19 +5,12 @@ local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 local pretty = require 'lib.pl.pretty'
 
-local ExampleRenderSystem = tiny.processingSystem()
-ExampleRenderSystem.filter = tiny.requireAll("Transform", "Mesh", "Material")
+local RenderSystem = tiny.processingSystem()
+RenderSystem.filter = tiny.requireAll("Transform", "Mesh", "Material")
 
-function ExampleRenderSystem.draw(pass)
-  local renderables = ExampleRenderSystem.entities
+function RenderSystem.draw(pass)
+  local renderables = RenderSystem.entities
   for _, renderable in pairs(renderables) do
-    if renderable.Controller then
-      -- print(pretty.write(renderable.Mesh))
-      -- print(pretty.write(renderable.Transform))
-      -- print(pretty.write(renderable.Material))
-      -- print(renderable.Material.shader)
-      -- print(renderable.MotionTracking.hand)
-    end
     local transform = renderable.Transform
     local mesh = renderable.Mesh
     local material = renderable.Material
@@ -56,4 +49,4 @@ function ExampleRenderSystem.draw(pass)
   end
 end
 
-return ExampleRenderSystem
+return RenderSystem

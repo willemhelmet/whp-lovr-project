@@ -5,128 +5,97 @@ local tiny = require 'lib.tiny'
 local pretty = require 'lib.pl.pretty'
 
 local PhysicsSystem = tiny.processingSystem()
-PhysicsSystem.filter = tiny.requireAll(Physics, Transform)
+PhysicsSystem.filter = tiny.requireAll('Physics', 'Transform')
 
 local world = lovr.physics.newWorld()
-local objects = {}
 
+function PhysicsSystem:onAdd(e)
+  local physics = e.Physics
+  local transform = e.Transform
+
+  if not physics.collider then
+    local pos = transform.position
+    local offset = physics.offset
+
+    local finalX = pos[1] + offset[1]
+    local finalY = pos[2] + offset[2]
+    local finalZ = pos[3] + offset[3]
+    if physics.shapes and #physics.shapes > 0 then
+      physics.collider = world:newCollider(finalX, finalY, finalZ)
+
+      for _, shapeDef in ipairs(physics.shapes) do
+        local shape = nil
+        if shapeDef.type == 'box' then
+          shape = lovr.physics.newBoxShape(shapeDef.width, shapeDef.height, shapeDef.depth)
+        elseif shapeDef.type == 'sphere' then
+          shape = lovr.physics.newSphereShape(shapeDef.radius)
+        elseif shapeDef.type == 'capsule' then
+          shape = lovr.physics.newCapsuleShape(shapeDef.radius, shapeDef.length)
+        elseif shapeDef.type == 'cylinder' then
+          shape = lovr.physics.newCylinderShape(shapeDef.radius, shapeDef.length)
+        elseif shapeDef.type == 'convex' then
+          shape = lovr.physics.newConvexShape(shapeDef.model, shapeDef.scale or 1)
+        elseif shapeDef.type == 'terrain' then
+          shape = lovr.physics.newTerrainShape(shapeDef.scale, shapeDef.heightmap, shapeDef.stretch)
+        end
+        if shape then
+          physics.collider:addShape(shape)
+        end
+      end
+    else
+      -- If no shapes were provided, default to a box collider.
+      local width      = physics.width or 1
+      local height     = physics.height or 1
+      local depth      = physics.depth or 1
+      physics.collider = world:newBoxCollider(finalX, finalY, finalZ, width, height, depth)
+    end
+  end
+  physics.collider:setKinematic(physics.isKinematic)
+  physics.collider:setFriction(physics.friction)
+  physics.collider:setRestitution(physics.restitution)
+  physics.collider:setGravityScale(physics.gravityScale)
+  physics.collider:setLinearDamping(physics.linearDamping)
+  physics.collider:setAngularDamping(physics.angularDamping)
+  physics.collider:setContinuous(physics.continuous)
+  if physics.userData then
+    physics.collider:setUserData(physics.userData)
+  end
+end
 
 function PhysicsSystem:preProcess(dt)
   world:update(dt)
 end
 
-function PhysicsSystem:process(entity, dt)
-  local physics = entity.Physics
-  local transform = entity.Transform
+function PhysicsSystem:process(e, dt)
+  local physics = e.Physics
+  local transform = e.Transform
 
-  -- 1. Create Physics Body if it doesn't exist
-  if not physics.body then
-    -- physics.body = lovr.physics.newBody(physics.isStatic and "static" or "dynamic")
-    -- physics.shape = lovr.physics.newBoxShape(1, 1, 1) -- Example: Box shape
-    -- physics.body:setShape(physics.shape)
-    -- physics.body:setMass(physics.mass)
-    -- physics.body:setRestitution(physics.restitution)
-    -- physics.body:setFriction(physics.friction)
-    -- physics.body:setPosition(transform.position[1], transform.position[2], transform.position[3])
-    -- physics.body:setOrientation(transform.orientation)
-    -- lovr.physics.add(physics.body) -- Add body to the physics world
+  if physics.collider then
+    if not physics.isKinematic then
+      -- For dynamic objects, update the Transform from the physics simulation.
+      local x, y, z = physics.collider:getPosition()
+      transform.position = { x, y, z }
+      local angle, ax, ay, az = physics.collider:getOrientation()
+      transform.orientation = { angle, ax, ay, az }
+    else
+      -- For kinematic objects, push the Transform's data into the physics collider.
+      local pos = transform.position
+      local rot = transform.orientation
+      physics.collider:setPose(pos[1], pos[2], pos[3], rot[1], rot[2], rot[3], rot[4])
+    end
   end
-
-  -- 2. Apply Velocities
-  -- physics.body:setLinearVelocity(physics.linearVelocity[1], physics.linearVelocity[2], physics.linearVelocity[3])
-  -- physics.body:setAngularVelocity(physics.angularVelocity[1], physics.angularVelocity[2], physics.angularVelocity[3])
-
-  -- 3. Update Transform Component
-  -- local pos = physics.body:getPosition()
-  -- local ori = physics.body:getOrientation()
-  -- transform.position[1], transform.position[2], transform.position[3] = pos:unpack()
-  -- transform.orientation = ori
-
-  -- 4. Optionally, apply forces or torques based on other components
-  -- Example: If entity has a ForceComponent, apply it to the body.
-  -- if entity.ForceComponent then
-  --   local force = entity.ForceComponent.force
-  --   physics.body:applyForce(force[1], force[2], force[3])
-  --   entity.ForceComponent = nil -- Remove the ForceComponent after applying
-  -- end
 end
 
--- function PhysicsSystem:onAdd(e)
--- end
-
--- function PhysicsSystem:onRemove(e)
--- end
+function PhysicsSystem:onRemove(e)
+  local physics = e.Physics
+  if physics.collider then
+    physics.collider:destroy()
+    physics.collider = nil
+  end
+end
 
 function PhysicsSystem.getWorld()
   return world
-end
-
--- TODO: Write all the other collider wrapper functions
--- [x] newBoxCollider	
--- [x] newSphereCollider	
--- [ ] newCapsuleCollider
--- [ ] newCylinderCollider	
--- [ ] newConvexCollider	
--- [ ] newMeshCollider	
--- [ ] newTerrainCollider	
-function PhysicsSystem.newBoxCollider(name, position, scale)
-  assert(
-    type(name) == "string",
-    "PhysicsSystem.newBoxCollider: Parameter 'name' must be a string."
-  )
-  assert(
-    type(position) == "userdata",
-    "PhysicsSystem.newBoxCollider: Parameter 'position' must be a vec3."
-  )
-  assert(
-    type(scale) == "userdata",
-    "PhysicsSystem.newBoxCollider: Parameter 'scale' must be a vec3."
-  )
-  objects[name] = world:newBoxCollider(position, scale)
-  return objects[name]
-end
-
-function PhysicsSystem.newSphereCollider(name, position, radius)
-  assert(
-    type(name) == "string",
-    "PhysicsSystem.newSphereCollider: Parameter 'name' must be a string."
-  )
-  assert(
-    type(position) == "userdata",
-    "PhysicsSystem.newSphereCollider: Parameter 'position' must be a vec3."
-  )
-  assert(
-    type(radius) == "number",
-    "PhysicsSystem.newSphereCollider: Parameter 'radius' must be a number."
-  )
-  objects[name] = world:newSphereCollider(position, radius)
-  return objects[name]
-end
-
--- untested
-function PhysicsSystem.newCapsuleCollider(name, position, radius, length)
-  assert(
-    type(name) == 'string',
-    'PhysicsSystem.newCapsuleCollider: Parameter "name" must be a string.'
-  )
-  assert(
-    type(position) == 'userdata',
-    'PhysicsSystem.newCapsuleCollider: Parameter "position" must be a vec3.'
-  )
-  assert(
-    type(radius) == 'number',
-    'PhysicsSystem.newCapsuleCollider: Parameter "radius" must be a number.'
-  )
-  assert(
-    type(length) == 'number',
-    'PhysicsSystem.newCapsuleCollider: Parameter "length" must be a number.'
-  )
-  objects[name] = world:newCapsuleCollider(position, radius, length)
-  return objects[name]
-end
-
-function PhysicsSystem.getObject(name)
-  return objects[name]
 end
 
 return PhysicsSystem

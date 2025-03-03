@@ -2,9 +2,10 @@
 local lovr = require 'lovr'
 
 -- components
-local TransformComponent = require 'src.components.transform-component'
-local MeshComponent = require 'src.components.mesh-component'
 local MaterialComponent = require 'src.components.material-component'
+local MeshComponent = require 'src.components.mesh-component'
+local PhysicsComponent = require 'src.components.physics-component'
+local TransformComponent = require 'src.components.transform-component'
 
 local Grid = {
   Transform = nil,
@@ -33,7 +34,20 @@ function Grid.new()
         background = { 0.05, 0.05, 0.05 },
         foreground = { 0.5, 0.5, 0.5 }
       }
-    )
+    ),
+    Physics = PhysicsComponent.new({
+      isKinematic = true,
+      friction = 1.0,
+      restitution = 0.0,
+      shapes = {
+        {
+          type = 'box',
+          width = 200,
+          height = 0.001,
+          depth = 200
+        }
+      },
+    })
   }
 end
 

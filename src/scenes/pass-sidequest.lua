@@ -8,7 +8,7 @@ local Grid = require 'src.entities.grid'
 local Controller = require 'src.entities.controller'
 
 -- Systems
-local ExampleRenderSystem = require 'src.systems.example-render-system'
+local RenderSystem = require 'src.systems.render-system'
 local MotionTrackingSystem = require 'src.systems.motion-tracking-system'
 
 -- Components
@@ -19,16 +19,16 @@ local MotionTrackingComponent = require 'src.components.motion-tracking-componen
 
 -- World
 local PassSidequest = {}
-PassSidequest.world = tiny.world(ExampleRenderSystem, MotionTrackingSystem)
+PassSidequest.world = tiny.world(RenderSystem, MotionTrackingSystem)
 
 local balls = {}
 
 function PassSidequest.init()
+  -- Grid
+  PassSidequest.world:addEntity(Grid.new())
   -- Controllers
   PassSidequest.world:addEntity(Controller.new('left'))
   PassSidequest.world:addEntity(Controller.new('right'))
-  -- Grid
-  PassSidequest.world:addEntity(Grid.new())
 
   -- Sin wave controllers
   for i = 1, 20 do
@@ -50,7 +50,7 @@ function PassSidequest.update(dt)
 end
 
 function PassSidequest.draw(pass)
-  ExampleRenderSystem.draw(pass)
+  RenderSystem.draw(pass)
   pass:text('pass sidequest', 0, 1.5, -2, 0.25)
 end
 
