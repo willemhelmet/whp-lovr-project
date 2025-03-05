@@ -12,83 +12,119 @@ local pretty = require 'lib.pl.pretty'
 local Grid = require 'src.entities.grid'
 local Controller = require 'src.entities.controller'
 
+-- components
+local JointComponent = require 'src.components.joint-component'
+local TransformComponent = require 'src.components.transform-component'
+local MaterialComponent = require 'src.components.material-component'
+local MeshComponent = require 'src.components.mesh-component'
+local PhysicsComponent = require 'src.components.physics-component'
+
 -- systems
-local ControllerSystem = require 'src.systems.controller-system'
+local JointSystem = require 'src.systems.joint-system'
 local PhysicsSystem = require 'src.systems.physics-system'
-local ControllerRenderingSystem = require 'src.systems.controller-rendering-system'
+local MotionTrackingSystem = require 'src.systems.motion-tracking-system'
+local RenderSystem = require 'src.systems.render-system'
+
+-- assets
+local UnlitColorMaterial = require 'assets.shaders.unlit-color.unlit-color-material'
 
 local NewtonsCradle = {}
-NewtonsCradle.tiny = tiny.world(PhysicsSystem, ControllerSystem, ControllerRenderingSystem)
+NewtonsCradle.world = tiny.world(PhysicsSystem, MotionTrackingSystem, RenderSystem, JointSystem)
+NewtonsCradle.world:setSystemIndex(PhysicsSystem, 1)
+NewtonsCradle.world:setSystemIndex(JointSystem, 2)
 
 local frame
 local framePose
 local balls = {}
 local count = 10
 local radius = 1 / count / 2
+
 local gap = 0.01
 
 local controllerBoxes = {}
 
 function NewtonsCradle.init()
+  NewtonsCradle.world:addEntity(Grid.new())
   -- static geometry from which balls are suspended
   local size = lovr.math.vec3(1.2, 0.1, 0.3)
-  frame = PhysicsSystem.newBoxCollider(
-    "frame",
-    lovr.math.vec3(0, 2, -2),
-    size
-  )
-  frame:setKinematic(true)
-  framePose = lovr.math.newMat4(frame:getPose()):scale(size)
-
+  frame = {
+    Transform = TransformComponent.new(0, 2, -2, 0, 0, 0, 0, 1.2, 0.1, 0.3),
+    Mesh = MeshComponent.new("/assets/models/primitives/cube.glb"),
+    Material = MaterialComponent.new(UnlitColorMaterial, {
+      color = lovr.math.newVec3(
+        lovr.math.random(),
+        lovr.math.random(),
+        lovr.math.random())
+    }),
+    Physics = PhysicsComponent.new({
+      isKinematic = true,
+      shapes = {
+        {
+          type = 'box',
+          width = 1.2,
+          height = 0.1,
+          depth = 0.3
+        }
+      }
+    })
+  }
+  NewtonsCradle.world:addEntity(frame)
   -- create balls along length of frame
-  -- and attach them with two distance joints to frame
-  local ballCounter = 1
   for x = -0.5, 0.5, 1 / count do
-    local ball = PhysicsSystem.newSphereCollider(
-      "ball" .. ballCounter,
-      lovr.math.vec3(x, 1, -2),
-      radius - gap
-    )
-    ball:setRestitution(1.0)
+    local ball = {}
+    ball.Transform = TransformComponent.new(x, 1, -2, 0, 0, 0, 0, radius, radius, radius)
+    ball.Mesh = MeshComponent.new('/assets/models/primitives/sphere.glb')
+    ball.Material = MaterialComponent.new(UnlitColorMaterial, {
+      color = lovr.math.newVec3(
+        lovr.math.random(),
+        lovr.math.random(),
+        lovr.math.random())
+    })
+    ball.Physics = PhysicsComponent.new({
+      restitution = 1.0,
+      shapes = {
+        {
+          type = 'sphere',
+          radius = radius - gap
+        }
+      }
+    })
+    ball.Joint = JointComponent.new({
+      {
+        type = 'distance',
+        entityA = frame,
+        entityB = ball,
+        anchorPosition = lovr.math.newVec3(x, 2, -2 + 0.25),
+        anchorPosition2 = lovr.math.newVec3(x, 1, -2)
+      },
+      {
+        type = 'distance',
+        entityA = frame,
+        entityB = ball,
+        anchorPosition = lovr.math.newVec3(x, 2, -2 - 0.25),
+        anchorPosition2 = lovr.math.newVec3(x, 1, -2)
+      }
+    })
+    NewtonsCradle.world:addEntity(ball)
     table.insert(balls, ball)
-    lovr.physics.newDistanceJoint(frame, ball, vec3(x, 2, -2 + 0.25), vec3(x, 1, -2))
-    lovr.physics.newDistanceJoint(frame, ball, vec3(x, 2, -2 - 0.25), vec3(x, 1, -2))
-    ballCounter = ballCounter + 1
   end
-  local lastBall = balls[#balls]
-  lastBall:applyLinearImpulse(.6, 0, 0)
 end
 
+local hasAppliedInitialImpulse = false
 function NewtonsCradle.update(dt)
-  NewtonsCradle.tiny:update(dt)
-  -- TODO: Make this a entity... should it be in our controller?
-  for i, hand in ipairs(ControllerSystem.getHands()) do
-    if not controllerBoxes[i] then
-      controllerBoxes[i] = PhysicsSystem.newBoxCollider(
-        hand,
-        lovr.math.vec3(0, 0, 0),
-        lovr.math.vec3(0.25, 0.25, 0.25)
-      )
-      controllerBoxes[i]:setKinematic(true)
-      NewtonsCradle.tiny:addEntity(Controller)
-    end
-    controllerBoxes[i]:setPose(table.unpack(Controller.Pose[hand]))
+  NewtonsCradle.world:update(dt)
+  if not hasAppliedInitialImpulse then
+    local lastBall = balls[#balls].Physics.collider
+    lastBall:applyLinearImpulse(0.6, 0, 0)
+    hasAppliedInitialImpulse = true
   end
 end
 
 function NewtonsCradle.draw(pass)
-  Grid.draw(pass)
+  -- PhysicsSystem.drawDebug(pass)
+  RenderSystem.draw(pass)
 
   pass:setShader()
-  pass:box(framePose)
-  pass:setColor(1, 1, 1)
-  for i, ball in ipairs(balls) do
-    local position = lovr.math.vec3(ball:getPosition())
-    pass:sphere(position, radius)
-  end
-
-  ControllerRenderingSystem.draw(pass)
-
   pass:setColor(1, 1, 1)
   pass:text('newtons cradle', 0, 1.5, -4, 0.35)
 end

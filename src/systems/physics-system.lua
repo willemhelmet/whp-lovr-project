@@ -3,11 +3,12 @@
 local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 local pretty = require 'lib.pl.pretty'
+local phywire = require 'lib.phywire'
 
 local PhysicsSystem = tiny.processingSystem()
 PhysicsSystem.filter = tiny.requireAll('Physics', 'Transform')
 
-local world = lovr.physics.newWorld()
+local world = lovr.physics.newWorld({ restitutionThreshold = .05 })
 
 function PhysicsSystem:onAdd(e)
   local physics = e.Physics
@@ -92,6 +93,11 @@ function PhysicsSystem:onRemove(e)
     physics.collider:destroy()
     physics.collider = nil
   end
+end
+
+function PhysicsSystem.drawDebug(pass)
+  phywire.draw(pass, world)
+  phywire.drawJoints(pass, world)
 end
 
 function PhysicsSystem.getWorld()
