@@ -23,4 +23,8 @@ function MotionTracking:process(e, dt)
   end
 end
 
+function MotionTracking.getPosition(device)
+  return { lovr.headset.getPosition(device) }
+end
+
 return MotionTracking

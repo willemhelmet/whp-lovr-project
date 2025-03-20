@@ -14,7 +14,12 @@ local phywire = require 'lib.phywire'
 local PhysicsSystem = tiny.processingSystem()
 PhysicsSystem.filter = tiny.requireAll('Physics', 'Transform')
 
-local world = lovr.physics.newWorld({ restitutionThreshold = .05 })
+local world = lovr.physics.newWorld({
+  restitutionThreshold = .05,
+  tags = {
+    "default", "controller"
+  }
+})
 
 function PhysicsSystem:onAdd(e)
   local physics = e.Physics
@@ -64,6 +69,7 @@ function PhysicsSystem:onAdd(e)
   physics.collider:setLinearDamping(physics.linearDamping)
   physics.collider:setAngularDamping(physics.angularDamping)
   physics.collider:setContinuous(physics.continuous)
+  physics.collider:setTag(physics.tag)
   if physics.userData then
     physics.collider:setUserData(physics.userData)
   end

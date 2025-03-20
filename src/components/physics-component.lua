@@ -12,6 +12,7 @@ function PhysicsComponent.new(options)
   return {
     collider = nil, -- Set later by the PhysicsSystem
     shapes = options.shapes or {},
+    tag = options.tag or "default",
     isKinematic = options.isKinematic or false,
     isSensor = options.isSensor or false,
     friction = options.friction or 0.5,
@@ -24,7 +25,7 @@ function PhysicsComponent.new(options)
     degreesOfFreedom = options.degreesOfFreedom, -- e.g., { x = true, y = false, z = true }
     collisionGroups = options.collisionGroups or {},
     offset = options.offset or { 0, 0, 0 },      -- Optional offset relative to the TransformComponent
-    userData = options.userData or {}            -- metadata
+    userData = options.userData or nil
   }
 end
 

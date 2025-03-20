@@ -14,6 +14,7 @@ local JointSystem = tiny.processingSystem()
 JointSystem.filter = tiny.requireAll("Joint", "Physics")
 
 function JointSystem:onAdd(e)
+  print('hi')
   for i, jointComp in ipairs(e.Joint) do
     local entityA = jointComp.entityA
     local entityB = jointComp.entityB
