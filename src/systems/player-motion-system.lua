@@ -1,4 +1,10 @@
 -- src/systems/player-motion-system.lua
+--
+-- Player Motion System: Controls player movement and rotation in the VR environment.
+-- Handles locomotion input (joystick/thumbstick), applies movement in the direction
+-- of gaze or controller orientation, and manages turning (smooth or snap).
+-- Provides the core navigation capabilities for the VR experience.
+
 local tiny = require 'lib.tiny'
 local lovr = require 'lovr'
 local Input = require 'src.core.input'

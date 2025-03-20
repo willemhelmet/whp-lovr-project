@@ -1,4 +1,10 @@
 -- src/systems/physics-system.lua
+--
+-- Physics System: Manages physics simulation for all entities with physics components.
+-- Handles the creation, updating, and destruction of physics bodies and colliders.
+-- Synchronizes physics state with entity transforms (position and orientation).
+-- For kinematic objects, updates the physics from transforms.
+-- For dynamic objects, updates transforms from physics simulation results.
 
 local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
@@ -17,10 +23,10 @@ function PhysicsSystem:onAdd(e)
   if not physics.collider then
     local pos = transform.position
     local offset = physics.offset
-
     local finalX = pos[1] + offset[1]
     local finalY = pos[2] + offset[2]
     local finalZ = pos[3] + offset[3]
+
     if physics.shapes and #physics.shapes > 0 then
       physics.collider = world:newCollider(finalX, finalY, finalZ)
 

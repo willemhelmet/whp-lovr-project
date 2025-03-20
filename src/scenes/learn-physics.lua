@@ -8,12 +8,14 @@ local tiny = require 'lib.tiny'
 -- entities
 local Controller = require 'src.entities.controller'
 local Grid = require 'src.entities.grid'
+local Box = require 'src.entities.box'
 
 -- components
 local MaterialComponent = require 'src.components.material-component'
 local MeshComponent = require 'src.components.mesh-component'
 local PhysicsComponent = require 'src.components.physics-component'
 local TransformComponent = require 'src.components.transform-component'
+local GrabComponent = require 'src.components.grab-component'
 
 -- systems
 local MotionTrackingSystem = require 'src.systems.motion-tracking-system'
@@ -21,7 +23,7 @@ local PhysicsSystem = require 'src.systems.physics-system'
 local RenderSystem = require 'src.systems.render-system'
 
 --assets
-local UnlitColorMaterial = require 'assets.shaders.unlit-color.unlit-color-material'
+local UnlitColorMaterial = require 'assets.materials.unlit-color-material'
 
 -- Learn Physics
 local LearnPhysics = {}
@@ -33,11 +35,13 @@ function LearnPhysics:init()
 
   for x = -1, 1, .25 do
     for y = .125, 2, .2499 do
-      local box = {
+      LearnPhysics.world:addEntity(Box.new({
         Transform = TransformComponent.new(x, y, -2 - y / 5, 0, 0, 0, 0, .25, .25, .25),
-        Material = MaterialComponent.new(UnlitColorMaterial,
-          { color = lovr.math.newVec3(lovr.math.random(), lovr.math.random(), lovr.math.random()) }),
-        Mesh = MeshComponent.new('/assets/models/primitives/cube.glb'),
+        Mesh = MeshComponent.new("assets/models/primitives/cube.glb"),
+        Material = MaterialComponent.new(
+          UnlitColorMaterial,
+          { color = lovr.math.newVec3(lovr.math.random(), lovr.math.random(), lovr.math.random()) }
+        ),
         Physics = PhysicsComponent.new({
           isKinematic = false,
           shapes = {
@@ -48,9 +52,9 @@ function LearnPhysics:init()
               depth = 0.25
             }
           }
-        })
-      }
-      LearnPhysics.world:addEntity(box)
+        }),
+        Grab = GrabComponent.new({})
+      }))
     end
   end
 end

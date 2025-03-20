@@ -1,46 +1,49 @@
--- scr/core/input.lua
--- TODO: Delete this
+-- src/systems/input-system.lua
+
+-- lib
 local lovr = require 'lovr'
+local tiny = require 'lib.tiny'
 local tablex = require 'lib.pl.tablex'
+local pretty = require 'lib.pl.pretty'
 local Keybinds = require 'config.keybinds'
-local Input = {}
 
-Input.states = {}
-Input.previousStates = {}
-Input.callbacks = {}
+local InputSystem = tiny.processingSystem()
+-- InputSystem.filter = tiny.requireAll('Input') -- Assuming entities have an inputComponent
 
-function Input.getValue(actionName)
-  return Input.states[actionName]
+InputSystem.states = {}
+InputSystem.previousStates = {}
+InputSystem.callbacks = {}
+
+function InputSystem:getValue(actionName)
+  return self.states[actionName]
 end
 
-function Input.onInputChanged(callback)
-  table.insert(Input.callbacks, callback)
+function InputSystem:onInputChanged(callback)
+  table.insert(self.callbacks, callback)
 end
 
-function Input.update(dt)
+function InputSystem:update(dt)
   -- Store previous states
-  Input.previousStates = tablex.copy(Input.states)
+  self.previousStates = tablex.copy(self.states)
 
   -- Update all action states
-  -- for actionName, action in pairs(Input.bindings) do
   for actionName, action in pairs(Keybinds) do
-    local value = Input.evaluateAction(action)
-    if Input.states[actionName] ~= value then
-      Input.states[actionName] = value
+    local value = self:evaluateAction(action)
+    if self.states[actionName] ~= value then
+      self.states[actionName] = value
       -- Trigger callbacks
-      for _, callback in ipairs(Input.callbacks) do
-        callback(actionName, value, Input.previousStates[actionName])
+      for _, callback in ipairs(self.callbacks) do
+        callback(actionName, value, self.previousStates[actionName])
       end
     end
   end
 end
 
-function Input.evaluateAction(action)
+function InputSystem:evaluateAction(action)
   if not action or not action.type or not action.bindings then
     return nil
   end
 
-  -- Handle different action types
   if action.type == 'boolean' then
     for _, binding in ipairs(action.bindings) do
       if binding.device == 'keyboard' and binding.key then
@@ -48,8 +51,6 @@ function Input.evaluateAction(action)
           return true
         end
       elseif binding.device == 'vr' and binding.source and binding.input then
-        -- WHP: Do I also want to include funtionality to make analog inputs
-        --      (i.e. trigger, grip, joysticks) act as boolean triggers?
         if lovr.headset.isDown(binding.source, binding.input) then
           return true
         end
@@ -65,10 +66,7 @@ function Input.evaluateAction(action)
         end
       else
         if binding.device == 'vr' and binding.source and binding.input then
-          -- WHP: Not so sure about this one... what does select() do here?
           local value = select(1, lovr.headset.getAxis(binding.source, binding.input))
-          -- WHP: Additionally, the math.abs value feels geared towards the thumbsticks
-          --      but that doens't feel right to me. will have to revisit
           maxValue = math.max(maxValue, math.abs(value))
         end
       end
@@ -77,14 +75,12 @@ function Input.evaluateAction(action)
   elseif action.type == 'vector2' then
     for _, binding in ipairs(action.bindings) do
       if binding.device == 'keyboard' then
-        -- Handle keyboard directional input
         local x, y = 0, 0
         if binding.positive_x and lovr.system.isKeyDown(binding.positive_x) then x = x + 1 end
         if binding.negative_x and lovr.system.isKeyDown(binding.negative_x) then x = x - 1 end
         if binding.positive_y and lovr.system.isKeyDown(binding.positive_y) then y = y + 1 end
         if binding.negative_y and lovr.system.isKeyDown(binding.negative_y) then y = y - 1 end
 
-        -- Normalize diagonal movement
         if x ~= 0 and y ~= 0 then
           local length = math.sqrt(x * x + y * y)
           x = x / length
@@ -95,7 +91,6 @@ function Input.evaluateAction(action)
           return { x = x, y = y }
         end
       elseif binding.device == 'vr' and binding.source and binding.input then
-        -- Handle VR Thumbstick input
         local x, y = lovr.headset.getAxis(binding.source, binding.input)
         return { x = x, y = y }
       end
@@ -105,22 +100,4 @@ function Input.evaluateAction(action)
   return nil
 end
 
-function Input.getAxis(device, axis)
-  local x, y = lovr.headset.getAxis(device, axis)
-  return x, y
-end
-
-function Input.isDown(device, button)
-  if device == 'keyboard' then
-    return lovr.system.isKeyDown(button)
-  else
-    return lovr.headset.isDown(device, button)
-  end
-end
-
--- WHP: Is this the best place for this function call?
-function Input.getHands()
-  return lovr.headset.getHands()
-end
-
-return Input
+return InputSystem

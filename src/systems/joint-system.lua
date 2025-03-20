@@ -1,4 +1,9 @@
 -- src/systems/joint-system.lua
+--
+-- Joint System: Creates and manages physics joints between entities.
+-- Supports various joint types (ball, hinge, distance, etc.) to constrain
+-- physics object movement and create realistic mechanical interactions.
+-- Essential for complex mechanical assemblies and articulated structures.
 
 -- lib
 local lovr = require 'lovr'

@@ -1,4 +1,9 @@
 -- src/systems/motion-tracking-system.lua
+--
+-- Motion Tracking System: Updates entity transforms based on VR device tracking.
+-- Synchronizes the position and orientation of in-game entities with real-world
+-- VR controller or headset movements.
+-- Essential for controller representation and hand presence in VR.
 
 -- lib
 local lovr = require 'lovr'

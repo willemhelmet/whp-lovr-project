@@ -1,4 +1,9 @@
 -- src/components/joint-component.lua
+--
+-- Joint Component: Defines physical constraints between entities.
+-- Configures how entities connect to each other through various joint types
+-- (weld, ball, hinge, slider, etc.) and their properties (anchor points, axes).
+-- Used by the Joint System to create realistic mechanical connections.
 
 local lovr = require 'lovr'
 local pretty = require 'lib.pl.pretty'

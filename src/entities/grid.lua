@@ -1,24 +1,18 @@
 -- src/entities/grid.lua
 local lovr = require 'lovr'
+local Grid = {}
 
 -- components
-local MaterialComponent = require 'src.components.material-component'
-local MeshComponent = require 'src.components.mesh-component'
-local PhysicsComponent = require 'src.components.physics-component'
 local TransformComponent = require 'src.components.transform-component'
+local MeshComponent = require 'src.components.mesh-component'
+local MaterialComponent = require 'src.components.material-component'
+local PhysicsComponent = require 'src.components.physics-component'
 
-local Grid = {
-  Transform = nil,
-  Mesh = nil,
-  Material = nil
-}
+-- materials
+local GridMaterial = require 'assets.materials.grid-material'
 
 function Grid.new()
-  local vert = lovr.filesystem.newBlob('assets/shaders/grid/grid.vert')
-  local frag = lovr.filesystem.newBlob('assets/shaders/grid/grid.frag')
-  local shader = lovr.graphics.newShader(vert, frag)
   return {
-    Grid = {},
     Transform = TransformComponent.new(
       0, 0, 0,
       0, 0, 0, 0,
@@ -28,7 +22,7 @@ function Grid.new()
     ),
     Mesh = MeshComponent.new('/assets/models/primitives/plane.glb'),
     Material = MaterialComponent.new(
-      shader,
+      GridMaterial,
       {
         lineWidth = 0.005,
         background = { 0.05, 0.05, 0.05 },
@@ -37,17 +31,18 @@ function Grid.new()
     ),
     Physics = PhysicsComponent.new({
       isKinematic = true,
-      friction = 1.0,
-      restitution = 0.0,
+      offset = { 0, -0.005, 0 },
       shapes = {
         {
           type = 'box',
           width = 200,
-          height = 0.001,
+          height = 0.01,
           depth = 200
         }
-      },
-    })
+      }
+    }
+
+    )
   }
 end
 
