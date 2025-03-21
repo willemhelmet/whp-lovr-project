@@ -83,7 +83,7 @@ function PhysicsSystem:process(e, dt)
   local physics = e.Physics
   local transform = e.Transform
 
-  if physics.collider then
+  if physics.collider and physics.collider:isEnabled() then
     if not physics.isKinematic then
       -- For dynamic objects, update the Transform from the physics simulation.
       local x, y, z = physics.collider:getPosition()

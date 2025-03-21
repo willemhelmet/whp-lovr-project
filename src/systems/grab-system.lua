@@ -20,6 +20,10 @@ GrabSystem.filter = tiny.requireAll("Controller")
 local controllerLeft
 local controllerRight
 local worldRef
+local previousGrabLeftState
+local previousGrabRightState
+local grabbedEntityLeft
+local grabbedEntityRight
 
 function GrabSystem:onAddToWorld(world)
   worldRef = world
@@ -40,7 +44,11 @@ function GrabSystem:process(e, dt)
 end
 
 function GrabSystem:update(dt)
-  if InputSystem:getValue('grabLeft') == 1 then
+  local currentGrabLeftState = InputSystem:getValue('grabLeft')
+  local currentGrabRightState = InputSystem:getValue('grabRight')
+
+  -- Handle left controller
+  if currentGrabLeftState == 1 then
     local leftHandPosition = MotionTrackingSystem.getPosition('left')
     local nearestCollider = PhysicsSystem.getWorld():overlapShape(
       lovr.physics.newSphereShape(2),
@@ -54,32 +62,67 @@ function GrabSystem:update(dt)
     )
 
     if nearestCollider then
-      local nearestComponent = nearestCollider:getUserData()
-
-      if nearestComponent and nearestComponent.Grabbable then
-        if not nearestComponent.Joint then
-          nearestComponent.Joint = JointComponent.new({
+      grabbedEntityLeft = nearestCollider:getUserData()
+      if grabbedEntityLeft and grabbedEntityLeft.Grabbable then
+        if not grabbedEntityLeft.Joint then
+          grabbedEntityLeft.Joint = JointComponent.new({
             {
               type = 'weld',
               entityA = controllerLeft,
-              entityB = nearestComponent
+              entityB = grabbedEntityLeft
             }
           })
         end
-        worldRef:addEntity(nearestComponent)
+        worldRef:addEntity(grabbedEntityLeft)
       end
     end
+  elseif previousGrabLeftState == 1 and currentGrabLeftState == 0 then
+    if grabbedEntityLeft and grabbedEntityLeft.Joint then
+      grabbedEntityLeft.Joint[1].joint[1]:destroy()
+      grabbedEntityLeft.Joint = nil
+      worldRef:addEntity(grabbedEntityLeft)
+    end
   end
+  previousGrabLeftState = currentGrabLeftState
+
+  -- Handle right controller
+  if currentGrabRightState == 1 then
+    local rightHandPosition = MotionTrackingSystem.getPosition('right')
+    local nearestCollider = PhysicsSystem.getWorld():overlapShape(
+      lovr.physics.newSphereShape(2),
+      rightHandPosition[1], -- position.x
+      rightHandPosition[2], -- position.y
+      rightHandPosition[3], -- position.z
+      1, 0, 0, 0,           -- orientation
+      0,                    -- maxDistance
+      "~controller",        -- filter, will not register "controller" colliders
+      nil                   -- callback function
+    )
+
+    if nearestCollider then
+      grabbedEntityRight = nearestCollider:getUserData()
+      if grabbedEntityRight and grabbedEntityRight.Grabbable then
+        if not grabbedEntityRight.Joint then
+          grabbedEntityRight.Joint = JointComponent.new({
+            {
+              type = 'weld',
+              entityA = controllerRight,
+              entityB = grabbedEntityRight
+            }
+          })
+        end
+        worldRef:addEntity(grabbedEntityRight)
+      end
+    end
+  elseif previousGrabRightState == 1 and currentGrabRightState == 0 then
+    if grabbedEntityRight and grabbedEntityRight.Joint then
+      grabbedEntityRight.Joint[1].joint[1]:destroy()
+      grabbedEntityRight.Joint = nil
+      worldRef:addEntity(grabbedEntityRight)
+    end
+  end
+  previousGrabRightState = currentGrabRightState
 end
-
--- function GrabSystem:getNearbyGrabbableObjects(controller, radius)
--- end
-
--- function GrabSystem:grabObject(controller, object)
--- end
-
--- function GrabSystem:releaseObject(controller)
--- end
 
 function GrabSystem:postProcess(dt)
 end

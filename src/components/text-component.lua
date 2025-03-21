@@ -4,17 +4,16 @@ local TextComponent = {}
 
 
 function TextComponent.new(text, size, halign, valign)
-  local textComp = {
-    text = text,
-    size = size,
-    halign = halign or 'center',
-    valign = valign or 'middle'
-  }
-  function textComp:setText(text)
+  local comp = {}
+  comp.text = text or ""
+  comp.size = size or 1
+  comp.halign = halign or 'center'
+  comp.valign = valign or 'middle'
+  function comp:setText(text)
     self.text = text
   end
 
-  return textComp
+  return comp
 end
 
 return TextComponent
