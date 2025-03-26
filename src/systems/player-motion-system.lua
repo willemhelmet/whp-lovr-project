@@ -5,66 +5,101 @@
 -- of gaze or controller orientation, and manages turning (smooth or snap).
 -- Provides the core navigation capabilities for the VR experience.
 
+-- lib
 local tiny = require 'lib.tiny'
 local lovr = require 'lovr'
-local Input = require 'src.core.input'
+local vec3 = lovr.math.vec3
+local Vec3 = lovr.math.newVec3
+local Mat4 = lovr.math.newMat4
+local mat4 = lovr.math.mat4
+local pretty = require 'lib.pl.pretty'
+-- components
+local TransformComponent = require 'src.components.transform-component'
+-- systems
+local InputSystem = require 'src.systems.input-system'
+local MotionTrackingSystem = require 'src.systems.motion-tracking-system'
+local TransformSystem = require 'src.systems.transform-system'
+-- etc
 local Settings = require 'config.settings'
 
 local PlayerMotionSystem = tiny.processingSystem()
-PlayerMotionSystem.filter = tiny.requireAll("Pose", "Velocity")
+PlayerMotionSystem.filter = tiny.requireAll("Player")
+-- PlayerMotionSystem.filter = tiny.requireAll("VRRig")
 
--- Store previous velocity as a static variable
-local previousVelocity = lovr.math.newVec3(0, 0, 0)
 -- Keep snapTurn flag outside of update
 local hasTurned = false
 
+-- function PlayerMotionSystem:onAdd(e)
+--   print(e.Name)
+-- end
+
 function PlayerMotionSystem:process(e, dt)
-  local pose = e.Pose
+  local transform = e.Transform
+
+  local playerPose = mat4()
+  playerPose:translate(transform.localPosition)
+  playerPose:rotate(transform.localOrientation)
+
   -- Initialize or get velocity component
   if not e.Velocity then
-    e.Velocity = lovr.math.vec3(0, 0, 0)
+    e.Velocity = Vec3(0, 0, 0)
   end
   local velocity = e.Velocity
 
   -- Handle turning
-  -- TODO: Turning currently breaks when the user is not above the origin of
-  --       their tracking context. need to account for headset position.
+  local turnAmount
+  if InputSystem:getValue('turn') then
+    turnAmount = InputSystem:getValue('turn').x
+  end
+  local AIRotationQuat = quat()
   if Settings.turnStyle == "smooth" then
-    -- returns a number from -1 to 1
     -- WHP: I'm not in love with the fact that 'turn' is a vector2 that i
     --      need to extract the correct axis from
-    local turnAmount = Input.getValue('turn').x
-    if math.abs(turnAmount) > Settings.deadzone then
+    if turnAmount and math.abs(turnAmount) > Settings.deadzone then
       local turnSpeed = Settings.smoothTurnSpeed or (2 * math.pi * 1 / 6)
       local rotationAngle = -turnAmount * turnSpeed * dt
       local rotationQuat = lovr.math.quat(rotationAngle, 0, 1, 0)
-      pose:rotate(rotationQuat)
+      AIRotationQuat:set(rotationQuat)
+      transform.localOrientation:mul(rotationQuat):normalize()
+      -- local pos = vec3(transform.localPosition):add(vec3(lovr.headset.getPosition()))
+      -- playerPose:translate(pos.x, 0, pos.z)
+      -- playerPose:rotate(rotationQuat)
+      -- playerPose:translate(-pos.x, 0, -pos.z)
     end
   elseif Settings.turnStyle == "snap" then
     -- WHP: I'm not in love with the fact that 'turn' is a vector2 that i
     --      need to extract the correct axis from
-    local turnAmount = Input.getValue('turn').x
-    if math.abs(turnAmount) > Settings.snapTurnThreshold and not hasTurned then
+    if turnAmount and math.abs(turnAmount) > Settings.snapTurnThreshold and not hasTurned then
       local snapAngle = Settings.snapTurnAngle
       local turnDirection = turnAmount > 0 and 1 or -1
       local rotationAngle = -turnDirection * snapAngle
       local rotationQuat = lovr.math.quat(rotationAngle, 0, 1, 0)
-      pose:rotate(rotationQuat)
+      -- local pos = transform.position
+      local pos = vec3(transform.position):add(vec3(lovr.headset.getPosition()))
+      playerPose:translate(pos.x, 0, pos.z)
+      playerPose:rotate(rotationQuat)
+      playerPose:translate(-pos.x, 0, -pos.z)
       hasTurned = true
     elseif math.abs(turnAmount) < Settings.deadzone then -- prevent multiple turns
       hasTurned = false
     end
   end
+  -- apply quaternion
+  -- TransformSystem.setOrientation(transform, lovr.math.newQuat(playerPose:getOrientation()))
 
   -- Get movement input and head direction
-  local moveAmount = Input.getValue("move")
-  local headQuat = lovr.math.quat(lovr.headset.getOrientation('head'))
-  local direction = headQuat:direction()
+  local moveAmount = nil
+  if InputSystem:getValue("move") then
+    moveAmount = InputSystem:getValue("move")
+  end
+  -- local headQuat = lovr.math.quat(lovr.headset.getOrientation('head'))
+  local headQuat = transform.localOrientation
+  local direction = lovr.math.newVec3(headQuat:direction())
 
   -- Calculate movement vector
   local movement = lovr.math.vec3(0, 0, 0)
 
-  if math.abs(moveAmount.x) > Settings.deadzone or math.abs(moveAmount.y) > Settings.deadzone then
+  if moveAmount and math.abs(moveAmount.x) > Settings.deadzone or moveAmount and math.abs(moveAmount.y) > Settings.deadzone then
     -- Forward/backward movement
     if math.abs(moveAmount.y) > Settings.deadzone then
       local forward = direction * moveAmount.y
@@ -93,17 +128,17 @@ function PlayerMotionSystem:process(e, dt)
   else
     -- Decelerate when no input
     local deceleration = 8.0 -- Adjust this value to change how quickly you stop
-    velocity:lerp(lovr.math.vec3(0, 0, 0), deceleration * dt)
+    velocity:lerp(Vec3(0, 0, 0), deceleration * dt)
   end
 
   -- get rid of y component
   velocity.y = 0
 
-  -- Apply movement
-  pose:translate(velocity)
-
-  -- Store velocity for next frame
-  previousVelocity:set(velocity)
+  -- Update player's position
+  local newX = transform.position.x + velocity.x
+  local newY = transform.position.y + velocity.y
+  local newZ = transform.position.z + velocity.z
+  TransformSystem.setPosition(transform, lovr.math.newVec3(newX, newY, newZ))
 end
 
 return PlayerMotionSystem

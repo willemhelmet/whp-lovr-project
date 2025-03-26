@@ -1,5 +1,6 @@
 -- src/components/table.lua
 
+local lovr = require 'lovr'
 local Table = {}
 
 local TransformComponent = require 'src.components.transform-component'
@@ -13,7 +14,10 @@ local Box = require 'src.entities.box'
 function Table.new(position)
   return {
     Box.new({
-      Transform = TransformComponent.new(position[1], position[2] + 1, position[3], 1, 0, 0, 0, 2, 0.1, 1),
+      Transform = TransformComponent.new(
+        lovr.math.newVec3(position[1], position[2] + 1, position[3]),
+        lovr.math.newQuat(1, 0, 0, 0),
+        lovr.math.newVec3(2, 0.1, 1)),
       Physics = PhysicsComponent.new({
         isKinematic = true,
         shapes = {
@@ -29,9 +33,9 @@ function Table.new(position)
     }),
     Box.new({
       Transform = TransformComponent.new(
-        position[1] - 0.95, position[2] + 0.475, position[3] + 0.45,
-        1, 0, 0, 0,
-        0.1, 0.95, 0.1
+        lovr.math.newVec3(position[1] - 0.95, position[2] + 0.475, position[3] + 0.45),
+        lovr.math.newQuat(1, 0, 0, 0),
+        lovr.math.newVec3(0.1, 0.95, 0.1)
       ),
       Physics = PhysicsComponent.new({
         isKinematic = true,
@@ -48,9 +52,9 @@ function Table.new(position)
     }),
     Box.new({
       Transform = TransformComponent.new(
-        position[1] + 0.95, position[2] + 0.475, position[3] + 0.45,
-        1, 0, 0, 0,
-        0.1, 0.95, 0.1
+        lovr.math.newVec3(position[1] + 0.95, position[2] + 0.475, position[3] + 0.45),
+        lovr.math.newQuat(1, 0, 0, 0),
+        lovr.math.newVec3(0.1, 0.95, 0.1)
       ),
       Physics = PhysicsComponent.new({
         isKinematic = true,
@@ -67,9 +71,9 @@ function Table.new(position)
     }),
     Box.new({
       Transform = TransformComponent.new(
-        position[1] - 0.95, position[2] + 0.475, position[3] - 0.45,
-        1, 0, 0, 0,
-        0.1, 0.95, 0.1
+        lovr.math.newVec3(position[1] - 0.95, position[2] + 0.475, position[3] - 0.45),
+        lovr.math.newQuat(1, 0, 0, 0),
+        lovr.math.newVec3(0.1, 0.95, 0.1)
       ),
       Physics = PhysicsComponent.new({
         isKinematic = true,
@@ -86,9 +90,9 @@ function Table.new(position)
     }),
     Box.new({
       Transform = TransformComponent.new(
-        position[1] + 0.95, position[2] + 0.475, position[3] - 0.45,
-        1, 0, 0, 0,
-        0.1, 0.95, 0.1
+        lovr.math.newVec3(position[1] + 0.95, position[2] + 0.475, position[3] - 0.45),
+        lovr.math.newQuat(1, 0, 0, 0),
+        lovr.math.newVec3(0.1, 0.95, 0.1)
       ),
       Physics = PhysicsComponent.new({
         isKinematic = true,

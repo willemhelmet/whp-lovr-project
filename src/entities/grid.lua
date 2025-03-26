@@ -12,12 +12,11 @@ local GridMaterial = require 'assets.materials.grid-material'
 
 function Grid.new()
   return {
+    Name = "Grid",
     Transform = TransformComponent.new(
-      0, 0, 0,
-      0, 0, 0, 0,
-      200,
-      200,
-      200
+      lovr.math.newVec3(0, 0, 0),
+      lovr.math.newQuat(1, 0, 0, 0),
+      lovr.math.newVec3(200, 200, 200)
     ),
     Mesh = MeshComponent.new('/assets/models/primitives/plane.glb'),
     Material = MaterialComponent.new(

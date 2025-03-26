@@ -7,13 +7,11 @@
 
 local lovr = require 'lovr'
 
-local MotionTrackingComponent = {
-  hand = nil
-}
+local MotionTrackingComponent = {}
 
-function MotionTrackingComponent.new(hand)
+function MotionTrackingComponent.new(device)
   return {
-    hand = hand
+    device = device
   }
 end
 

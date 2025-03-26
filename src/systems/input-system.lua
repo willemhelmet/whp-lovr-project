@@ -15,7 +15,9 @@ InputSystem.previousStates = {}
 InputSystem.callbacks = {}
 
 function InputSystem:getValue(actionName)
-  return self.states[actionName]
+  if self.states[actionName] then
+    return self.states[actionName]
+  end
 end
 
 function InputSystem:onInputChanged(callback)

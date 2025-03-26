@@ -8,18 +8,17 @@
 -- lib
 local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
--- local pretty = require 'lib.pl.pretty'
+local pretty = require 'lib.pl.pretty'
 
 local RenderSystem = tiny.processingSystem()
--- TODO: How to handle things that aren't meshes? e.g. Text
 RenderSystem.filter = tiny.requireAny(
   tiny.requireAll("Transform", "Mesh", "Material"),
   tiny.requireAll("Transform", "Text")
 )
 
--- function RenderSystem.onAdd(e)
--- print(pretty.write(e))
--- end
+function RenderSystem.onAdd(e)
+  -- print(pretty.write(e))
+end
 
 function RenderSystem.draw(pass)
   local renderables = RenderSystem.entities
@@ -47,34 +46,19 @@ function RenderSystem.draw(pass)
       -- handle mesh
       pass:draw(
         mesh.model,
-        lovr.math.vec3(
-          transform.position[1],
-          transform.position[2],
-          transform.position[3]
-        ),
-        lovr.math.vec3(
-          transform.scale[1],
-          transform.scale[2],
-          transform.scale[3]
-        ),
-        lovr.math.quat(
-          transform.orientation[1],
-          transform.orientation[2],
-          transform.orientation[3],
-          transform.orientation[4]
-        )
+        transform.localPosition,
+        transform.localScale,
+        transform.localOrientation
       )
     elseif text then
       pass:text(
         text.text,
-        transform.position[1],
-        transform.position[2],
-        transform.position[3],
+        transform.localPosition,
         text.size,
-        transform.orientation[1],
-        transform.orientation[2],
-        transform.orientation[3],
-        transform.orientation[4]
+        transform.localOrientation,
+        0, -- text.wrap, not implemented
+        text.halign,
+        text.valign
       )
     end
   end

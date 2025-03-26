@@ -17,9 +17,11 @@ function Controller.new(hand)
   )
 
   return {
+    Name = "Controller " .. hand,
     Controller = {},
     Hand = hand,
-    Transform = TransformComponent.new(0, 0, 0, 0, 0, 0, 0, 1, 1, 1),
+    Transform = TransformComponent.new(),
+    Pose = lovr.math.newMat4(),
     Mesh = MeshComponent.new('/assets/models/quest-' .. hand .. '.glb'),
     Material = MaterialComponent.new(nil, {}),
     MotionTracking = MotionTrackingComponent.new(hand),

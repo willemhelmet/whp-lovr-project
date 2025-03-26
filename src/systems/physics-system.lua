@@ -8,7 +8,7 @@
 
 local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
-local pretty = require 'lib.pl.pretty'
+-- local pretty = require 'lib.pl.pretty'
 local phywire = require 'lib.phywire'
 
 local PhysicsSystem = tiny.processingSystem()
