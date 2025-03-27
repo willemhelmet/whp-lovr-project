@@ -1,4 +1,4 @@
--- assets/shaders/unlit-color/unlit-color-material.lua
+-- assets/materials/unlit-color-material.lua
 local lovr = require 'lovr'
 
 return lovr.graphics.newShader(

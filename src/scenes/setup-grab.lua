@@ -38,7 +38,11 @@ function GrabSetup.init()
 
   -- grabbable box
   GrabbableBox = Box.new({
-    Transform = TransformComponent.new(0, 2, -2, 1, 0, 0, 0, 0.25, 0.25, 0.25),
+    Transform = TransformComponent.new(
+      Vec3(0, 2, -2),
+      Quat(1, 0, 0, 0),
+      Vec3(0.25, 0.25, 0.25)
+    ),
     Physics = PhysicsComponent.new({
       isKinematic = false,
       shapes = {

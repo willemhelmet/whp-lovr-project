@@ -23,15 +23,17 @@ local TransformSystem = require 'src.systems.transform-system'
 local Settings = require 'config.settings'
 
 local PlayerMotionSystem = tiny.processingSystem()
-PlayerMotionSystem.filter = tiny.requireAll("Player")
--- PlayerMotionSystem.filter = tiny.requireAll("VRRig")
+PlayerMotionSystem.filter = tiny.requireAny("Player", "VRRig")
 
 -- Keep snapTurn flag outside of update
 local hasTurned = false
+local vrRig = nil
 
--- function PlayerMotionSystem:onAdd(e)
---   print(e.Name)
--- end
+function PlayerMotionSystem:onAdd(e)
+  if not vrRig then
+    vrRig = e
+  end
+end
 
 function PlayerMotionSystem:process(e, dt)
   local transform = e.Transform
@@ -139,6 +141,12 @@ function PlayerMotionSystem:process(e, dt)
   local newY = transform.position.y + velocity.y
   local newZ = transform.position.z + velocity.z
   TransformSystem.setPosition(transform, lovr.math.newVec3(newX, newY, newZ))
+end
+
+function PlayerMotionSystem.transform(pass)
+  if vrRig then
+    pass:transform(TransformSystem.toMat4(vrRig.Transform):invert())
+  end
 end
 
 return PlayerMotionSystem
