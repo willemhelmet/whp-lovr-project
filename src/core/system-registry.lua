@@ -8,7 +8,8 @@ local Systems = {
   PhysicsSystem = require 'src.systems.physics-system',
   RenderSystem = require 'src.systems.render-system',
   TransformSystem = require 'src.systems.transform-system',
-  PlayerMotionSystem = require 'src.systems.player-motion-system'
+  PlayerMotionSystem = require 'src.systems.player-motion-system',
+  LightingSystem = require 'src.systems.lighting-system'
 }
 
 return Systems

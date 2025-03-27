@@ -1,6 +1,5 @@
 uniform vec4 lightColor;
 uniform vec3 lightPos;
-uniform float attenuation;
 uniform vec4 ambience;
 uniform float specularStrength;
 uniform int metallic;
@@ -11,7 +10,7 @@ vec4 lovrmain() {
 
   // Linear attenuation factor
   float attenuation = 1.0 / (distanceToLight * distanceToLight);
-  
+
   // diffuse
   vec3 norm = normalize(Normal);
   vec3 lightDir = normalize(lightPos - PositionWorld);

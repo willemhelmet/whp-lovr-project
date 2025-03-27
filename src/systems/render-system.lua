@@ -64,4 +64,10 @@ function RenderSystem.draw(pass)
   end
 end
 
+function RenderSystem.setUniform(material, uniformName, value)
+  if material and material.values then
+    material.values[uniformName] = value
+  end
+end
+
 return RenderSystem
