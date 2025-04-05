@@ -1,5 +1,5 @@
-# WHP LOVR PROJECT
-I want to practice building a larger-scale project in LOVR. The goal is to have a foundation I can build other gameplay systems on top of.
+# LOVR-BOY
+This is a VR interactive framework built on LOVR. The main goal is to 1) teach me how to build a complex system for VR experiences, and 2) build a VR framework that will allow me to quickly build experiences for a wide range of VR headsets.
 
 ## Project Structure
 One thing I would really like to do is have an organized and understandable file structure. Below is my first pass

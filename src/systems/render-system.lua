@@ -9,6 +9,8 @@
 local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 local pretty = require 'lib.pl.pretty'
+-- systems
+local LightingSystem = require('src.systems.lighting-system')
 
 local RenderSystem = tiny.processingSystem()
 RenderSystem.filter = tiny.requireAny(
@@ -22,6 +24,8 @@ end
 
 function RenderSystem.draw(pass)
   local renderables = RenderSystem.entities
+
+
   for _, renderable in pairs(renderables) do
     local transform = renderable.Transform
 
@@ -35,6 +39,15 @@ function RenderSystem.draw(pass)
     -- handle material
     if material and material.shader then
       pass:setShader(material.shader)
+
+      -- Always set the light buffer for shaders that need it
+      -- Get lighting system info once per frame
+      local lightBuffer = LightingSystem.getLightBuffer()
+      local lightCount = LightingSystem.getLightCount()
+      if material.shader == require('assets.materials.phong-material') and lightBuffer then
+        pass:send('Lights', lightBuffer)
+      end
+
       for name, value in pairs(material.values) do
         pass:send(name, value)
       end

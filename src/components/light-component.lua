@@ -35,6 +35,7 @@ function LightComponent.new(options)
   end
   local entity = {}
   entity.color = options.color or defaults.color
+  entity.intensity = options.intensity or 1
   entity.constant = options.constant or defaults.constant
   entity.quadratic = options.quadratic or defaults.quadratic
   entity.linear = options.linear or defaults.linear

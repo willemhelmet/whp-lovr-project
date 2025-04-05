@@ -4,9 +4,11 @@
 local lovr = require 'lovr'
 local Quat = lovr.math.newQuat
 local Vec3 = lovr.math.newVec3
+local Vec4 = lovr.math.newVec4
 -- lib
 local tiny = require 'lib.tiny'
 local utils = require 'lib.pl.utils'
+local pretty = require 'lib.pl.pretty'
 -- scene
 local Scene = {}
 Scene.world = tiny.world()
@@ -33,57 +35,161 @@ local box = Box.new({
   ),
   Material = Scene.components.MaterialComponent.new(
     PhongMaterial, {
-      lightColor = { 1.0, 1.0, 1.0, 1.0 },
-      lightPos = { 1.0, 3.0, -1.0 },
       ambience = { 0.0, 0.0, 0.0, 1.0 },
-      specularStrength = 0,
-      metallic = 32.0
+      specularStrength = 0.0,
+      metallic = 32.0,
     }
   )
 })
 
-local PointLightAttLinearValues = { 0.7, 0.35, 0.22, 0.14, 0.09, 0.07, 0.045, 0.027, 0.022, 0.014, 0.007, 0.0014 }
-local PointLightAttQuadraticValues = { 1.8, 0.44, 0.20, 0.07, 0.032, 0.017, 0.0075, 0.0028, 0.0019, 0.0007, 0.0002, 0.000007 }
-local PointLightAttCounter = 2
+local box2 = Box.new({
+  Transform = Scene.components.TransformComponent.new(
+    Vec3(-2, 5, -5),
+    Quat(),
+    Vec3(1, 10, 1)
+  ),
+  Material = Scene.components.MaterialComponent.new(
+    PhongMaterial, {
+      ambience = { 0.0, 0.0, 0.0, 1.0 },
+      specularStrength = 0.0,
+      metallic = 32.0,
+    }
+  )
+})
+local box3 = Box.new({
+  Transform = Scene.components.TransformComponent.new(
+    Vec3(2, 5, -5),
+    Quat(),
+    Vec3(1, 10, 1)
+  ),
+  Material = Scene.components.MaterialComponent.new(
+    PhongMaterial, {
+      ambience = { 0.0, 0.0, 0.0, 1.0 },
+      specularStrength = 0.0,
+      metallic = 32.0,
+    }
+  )
+})
 
-local pointLight = {
+local box4 = Box.new({
+  Transform = Scene.components.TransformComponent.new(
+    Vec3(2, 5, -10),
+    Quat(),
+    Vec3(1, 10, 1)
+  ),
+  Material = Scene.components.MaterialComponent.new(
+    PhongMaterial, {
+      ambience = { 0.0, 0.0, 0.0, 1.0 },
+      specularStrength = 0.0,
+      metallic = 32.0,
+    }
+  )
+})
+
+local box5 = Box.new({
+  Transform = Scene.components.TransformComponent.new(
+    Vec3(-2, 5, -10),
+    Quat(),
+    Vec3(1, 10, 1)
+  ),
+  Material = Scene.components.MaterialComponent.new(
+    PhongMaterial, {
+      ambience = { 0.0, 0.0, 0.0, 1.0 },
+      specularStrength = 0.0,
+      metallic = 32.0,
+    }
+  )
+})
+local linear = { 0.71, 0.35, 0.22, 0.14, 0.09, 0.07, 0.045, 0.027, 0.022, 0.014, 0.007, 0.0014 }
+local quadratic = { 0.813, 0.442, 0.203, 0.075, 0.032, 0.017, 0.0075, 0.0028, 0.0019, 0.0007, 0.0002, 0.000007 }
+local option = 1
+
+-- Create multiple point lights
+local pointLight1 = {
   Transform = Scene.components.TransformComponent.new(
     Vec3(0, 1, -3)
   ),
-  Light = Scene.components.LightComponent.new()
+  Light = Scene.components.LightComponent.new({
+    color = Vec3(1, 0, 0),
+    intensity = 1.0,
+    constant = 1.0,
+    linear = linear[option],
+    quadratic = quadratic[option]
+  })
 }
+
+local pointLight2 = {
+  Transform = Scene.components.TransformComponent.new(
+    Vec3(0, 2, -3)
+  ),
+  Light = Scene.components.LightComponent.new({
+    color = Vec3(0, 1, 1),
+    intensity = 1.0,
+    constant = 1.0,
+    linear = linear[option],
+    quadratic = quadratic[option]
+  })
+}
+
 function Scene.init()
   for _, system in pairs(Scene.systems) do
     Scene.world:add(system)
   end
   -- Scene.world:add(Grid.new())
   Scene.world:add(VrRig.new())
-  Scene.world:add(pointLight)
+  Scene.world:add(pointLight1)
+  Scene.world:add(pointLight2)
   Scene.world:add(box)
+  Scene.world:add(box2)
+  Scene.world:add(box3)
+  Scene.world:add(box4)
+  Scene.world:add(box5)
 end
 
 function Scene.update(dt)
-  Scene.systems.RenderSystem.setUniform(box.Material, 'lightColor',
-    Vec4(
-      0.5 * math.sin(lovr.headset.getTime()) + 0.5,
-      0.0,
-      1.0,
-      1.0
+  local time = lovr.headset.getTime()
+  -- --- Light 1 ---
+  -- Animate color 1 (more dynamic color cycling)
+  local color1 = Vec3(
+    0.5 * math.sin(time * 1.3) + 0.5,
+    0.5 * math.cos(time * 1.7 + 2.0) + 0.5,
+    0.5 * math.sin(time * 0.9 + 4.0) + 0.5
+  )
+  pointLight1.Light.color = color1
+
+  -- Move light 1 (circular motion with vertical bobbing)
+  local radius1 = 1.0
+  local speed1 = 0.7
+  local verticalSpeed1 = 0.5
+  local verticalAmplitude1 = 0.3
+  Scene.systems.TransformSystem.setPosition(pointLight1.Transform,
+    Vec3(
+      math.cos(time * speed1) * radius1,
+      2 + math.sin(time * verticalSpeed1) * verticalAmplitude1,
+      -6 + math.sin(time * speed1) * radius1
     )
   )
-  Scene.systems.RenderSystem.setUniform(box.Material, 'lightPos',
-    Vec3(
-      math.sin(lovr.headset.getTime()),
-      0.5 * math.sin(lovr.headset.getTime()) + 0.7,
-      -3 + math.cos(lovr.headset.getTime())
-    )
+
+  -- --- Light 2 ---
+  -- Animate color 2 (offset and different frequencies)
+  local color2 = Vec3(
+    0.5 * math.cos(time * 1.1 + 1.0) + 0.5,
+    0.5 * math.sin(time * 1.5 + 3.0) + 0.5,
+    0.5 * math.cos(time * 0.8) + 0.5
   )
-  Scene.systems.TransformSystem.setPosition(pointLight.Transform,
+  pointLight2.Light.color = color2
+
+  -- Move light 2 (figure-eight motion)
+  local radius2 = 0.8
+  local speed2_x = 0.9
+  local speed2_y = 1.2
+  Scene.systems.TransformSystem.setPosition(pointLight2.Transform,
     Vec3(
-      math.sin(lovr.headset.getTime()),
-      0.5 * math.sin(lovr.headset.getTime()) + 0.7,
-      -3 + math.cos(lovr.headset.getTime())
+      math.sin(time * speed2_x) * radius2,
+      2 + math.cos(time * speed2_y) * 0.5,
+      -3 + math.cos(time * speed2_x) * radius2
     ))
+
   Scene.world:update(dt)
 end
 
@@ -91,15 +197,31 @@ function Scene.draw(pass)
   Scene.systems.PlayerMotionSystem.transform(pass)
   Scene.systems.RenderSystem.draw(pass)
   pass:setShader()
+
+  -- Draw light 1 visualization
   pass:setColor(
-    0.5 * math.sin(lovr.headset.getTime()) + 0.5,
-    0.0,
-    1.0
+    pointLight1.Light.color.x,
+    pointLight1.Light.color.y,
+    pointLight1.Light.color.z
   )
   pass:sphere(
-    pointLight.Transform.position.x,
-    pointLight.Transform.position.y,
-    pointLight.Transform.position.z,
+    pointLight1.Transform.position.x,
+    pointLight1.Transform.position.y,
+    pointLight1.Transform.position.z,
+    0.1,
+    Quat()
+  )
+
+  -- Draw light 2 visualization
+  pass:setColor(
+    pointLight2.Light.color.x,
+    pointLight2.Light.color.y,
+    pointLight2.Light.color.z
+  )
+  pass:sphere(
+    pointLight2.Transform.position.x,
+    pointLight2.Transform.position.y,
+    pointLight2.Transform.position.z,
     0.1,
     Quat()
   )
