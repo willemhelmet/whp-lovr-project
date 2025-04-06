@@ -38,7 +38,8 @@ vec4 lovrmain() {
     );
     
     // Diffuse
-    float diff = max(dot(norm, lightDir), 0.0);
+    // float diff = max(dot(norm, lightDir), 0.0); // -1 to 1 lambert, old school
+    float diff = 0.5 + dot(norm, lightDir) * 0.5; // "half lambert", thank you valve!!!
     vec4 diffuse = diff * vec4(lightColor, 1.0) * att * lightIntensity;
     
     // Specular
@@ -51,6 +52,7 @@ vec4 lovrmain() {
     result += (diffuse + specular) * baseColor;
   }
   
-  //return vec4(0.0, 1.0, 0.0, 1.0);
+  // gamma correction
+  result = vec4(pow(result.xyz, vec3(1.0/2.2)), 1.0);
   return result;
 }
