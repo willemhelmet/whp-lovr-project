@@ -26,7 +26,9 @@ local defaults = {
   constant = 1.0,
   linear = 0.07,
   quadratic = 1.8,
-  type = 'point' -- Future: 'directional', 'spot'
+  type = 'point', -- Future: 'directional', 'spot'
+  cutoff = 12.5,
+  outerCutoff = 17.5
 }
 
 function LightComponent.new(options)
@@ -40,6 +42,8 @@ function LightComponent.new(options)
   entity.quadratic = options.quadratic or defaults.quadratic
   entity.linear = options.linear or defaults.linear
   entity.type = options.type or defaults.type
+  entity.cutoff = options.cutoff or defaults.cutoff
+  entity.outerCutoff = options.outerCutoff or defaults.outerCutoff
   return entity
 end
 

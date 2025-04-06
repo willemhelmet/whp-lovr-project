@@ -26,7 +26,9 @@ function LightingSystem:process(e, dt)
     constant = light.constant,
     linear = light.linear,
     quadratic = light.quadratic,
-    type = light.type
+    type = light.type,
+    cutoff = light.cutoff,
+    outerCutoff = light.outerCutoff
   })
 end
 
@@ -40,17 +42,21 @@ function LightingSystem:postProcess(dt)
     if i <= self.activeLightCount then
       local light = self.lightsData[i]
       local lightType = 0.0
+      local cutoff = 0.0
+      local outerCutoff = 0.0
       if light.type == 'point' then
         lightType = 1.0
       elseif light.type == 'directional' then
         lightType = 2.0
       elseif light.type == 'spot' then
         lightType = 3.0
+        cutoff = math.cos(light.cutoff)
+        outerCutoff = math.cos(light.outerCutoff)
       end
-      table.insert(positions, Vec4(light.position.x, light.position.y, light.position.z, lightType)) -- Using w=1 to mark active light
-      table.insert(directions, Vec4(light.direction.x, light.direction.y, light.direction.z, 0))
+      table.insert(positions, Vec4(light.position.x, light.position.y, light.position.z, lightType))
+      table.insert(directions, Vec4(light.direction.x, light.direction.y, light.direction.z, cutoff))
       table.insert(colors, Vec4(light.color.x, light.color.y, light.color.z, light.intensity))
-      table.insert(attenuations, Vec4(light.constant, light.linear, light.quadratic, 0.0)) -- leftover variable, can use for something else
+      table.insert(attenuations, Vec4(light.constant, light.linear, light.quadratic, outerCutoff))
     else
       -- Inactive light placeholder
       table.insert(positions, Vec4(0, 0, 0, 0)) -- Using w=0 to mark inactive light

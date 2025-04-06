@@ -95,7 +95,7 @@ function Scene.init()
       type = 'point'
     })
   }
-  Scene.world:add(pointLight)
+  -- Scene.world:add(pointLight)
 
   -- directional light
   directionalLight = {
@@ -117,10 +117,10 @@ function Scene.init()
     Transform = Scene.components.TransformComponent.new(),
     Light = Scene.components.LightComponent.new({
       color = Vec3(1, 0, 0),
-      intensity = 0.1,
+      intensity = 0.01,
       type = 'spot',
-      cutoff = math.pi * 0.0125,
-      outerCutoff = math.pi * 0.125
+      cutoff = 45.0,
+      outerCutoff = 90.0
     })
   }
   Scene.world:add(spotLight)

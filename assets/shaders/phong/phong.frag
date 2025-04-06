@@ -7,7 +7,7 @@ layout(scalar) uniform Lights {
   vec4 positions[MAX_LIGHTS];   // x, y, z, lightType
   vec4 directions[MAX_LIGHTS];  // ax, ay, az, 0
   vec4 colors[MAX_LIGHTS];      // r, g, b, intensity
-  vec4 attenuation[MAX_LIGHTS]; // constant, linear, quadratic, 0
+  vec4 attenuations[MAX_LIGHTS]; // constant, linear, quadratic, 0
 };
 
 vec4 lovrmain() {
@@ -36,14 +36,16 @@ vec4 lovrmain() {
       // Distance and attenuation
       float dist = length(lightPos - PositionWorld);
       float att = 1.0 / (
-        attenuation[i].x + 
-        attenuation[i].y * dist + 
-        attenuation[i].z * (dist * dist)
+        attenuations[i].x + 
+        attenuations[i].y * dist + 
+        attenuations[i].z * (dist * dist)
       );
+
       // Diffuse
       float diff = max(dot(norm, lightDir), 0.0); // -1 to 1 lambert, old school
       // float diff = 0.5 + dot(norm, lightDir) * 0.5; // "half lambert", courtesy of valve
       vec4 diffuse = diff * vec4(lightColor, 1.0) * att * lightIntensity;
+
       // Specular
       vec3 viewDir = normalize(CameraPositionWorld - PositionWorld);
       vec3 reflectDir = reflect(-lightDir, norm);
@@ -51,12 +53,29 @@ vec4 lovrmain() {
       vec4 specular = specularStrength * spec * vec4(lightColor, 1.0) * att * lightIntensity;
 
       if (lightType == 3.0) { // handle spot light
+        // Get the spotlight direction (points FROM the light source)
+        vec3 spotDirection = normalize(directions[i].xyz); 
+        // Get the cosine of the angle between the light direction vector and the vector from the light to the fragment
+        float theta = dot(lightDir, -spotDirection); // lightDir points TO the light, so negate spotDirection
 
-      } else { // handle point light
-        // Add light contribution
-        result += (diffuse + specular) * baseColor;
+        // Retrieve the cosine of the inner and outer cutoff angles
+        // We'll store cos(cutOff) in attenuation.w and cos(outerCutOff) in directions.w
+        float cosCutOff = directions[i].w;      // Cosine of the inner cone angle
+        float cosOuterCutOff = attenuations[i].w;  // Cosine of the outer cone angle
+
+        // Calculate the spotlight intensity factor
+        float epsilon = cosCutOff - cosOuterCutOff;
+        // Avoid division by zero or negative numbers if cutoffs are equal or reversed
+        epsilon = max(epsilon, 0.001); 
+        // Smoothly interpolate intensity between the inner and outer cone angles
+        float spotIntensity = clamp((theta - cosOuterCutOff) / epsilon, 0.0, 1.0);
+
+        // Apply the spotlight effect
+        diffuse  *= spotIntensity;
+        specular *= spotIntensity;
       }
 
+      result += (diffuse + specular) * baseColor;
     } else if (lightType == 2.0) { // directional light
       // diffuse
       vec3 lightDir = normalize(-directions[i].xyz);
