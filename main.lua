@@ -15,7 +15,8 @@ local InputSystem = require 'src.systems.input-system'
 -- Scene.register('setup-grab', require 'src.scenes.setup-grab')
 -- Scene.register('setup-transform', require 'src.scenes.setup-transform')
 -- Scene.register('setup-player-2', require 'src.scenes.setup-player-2')
-Scene.register('setup-phong', require 'src.scenes.setup-phong')
+-- Scene.register('setup-phong', require 'src.scenes.setup-phong')
+Scene.register('setup-other-lights', require 'src.scenes.setup-other-lights')
 
 function lovr.load()
   -- Scene.switch('setup-input')
@@ -26,7 +27,8 @@ function lovr.load()
   -- Scene.switch('setup-grab')
   -- Scene.switch('setup-transform')
   -- Scene.switch('setup-player-2')
-  Scene.switch('setup-phong')
+  -- Scene.switch('setup-phong')
+  Scene.switch('setup-other-lights')
 end
 
 function lovr.update(dt)

@@ -245,12 +245,7 @@ function Scene.update(dt)
     Scene.systems.TransformSystem.setPosition(light.Transform, Vec3(posX, posY, posZ))
   end
 
-  -- IMPORTANT: Call updateBuffer *after* all transforms are updated
-  -- but *before* the world update processes systems that might depend on it (like RenderSystem)
-  -- However, RenderSystem reads it during its draw phase, which is after world:update().
-  -- So, let's call it *after* world:update() for now.
   Scene.world:update(dt)
-  -- Scene.systems.LightingSystem:updateBuffer() -- Update the light buffer data
 end
 
 function Scene.draw(pass)

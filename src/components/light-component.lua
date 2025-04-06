@@ -24,8 +24,8 @@ local defaults = {
   -- 1.0      | 0.007  | 0.0002
   -- 1.0      | 0.0014 | 0.000007
   constant = 1.0,
-  linear = 0.35,
-  quadratic = 0.44,
+  linear = 0.07,
+  quadratic = 1.8,
   type = 'point' -- Future: 'directional', 'spot'
 }
 

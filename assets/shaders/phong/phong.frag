@@ -4,7 +4,8 @@ uniform vec4 ambience;
 uniform float specularStrength;
 uniform int metallic;
 layout(scalar) uniform Lights {
-  vec4 positions[MAX_LIGHTS];   // x, y, z, isActive
+  vec4 positions[MAX_LIGHTS];   // x, y, z, lightType
+  vec4 directions[MAX_LIGHTS];  // ax, ay, az, 0
   vec4 colors[MAX_LIGHTS];      // r, g, b, intensity
   vec4 attenuation[MAX_LIGHTS]; // constant, linear, quadratic, 0
 };
@@ -14,45 +15,68 @@ vec4 lovrmain() {
   vec4 result = ambience * baseColor;
   
   // Debug - uncomment to see specific light info 
-  // return vec4(positions[0].x, 0.0, 0.0, 1.0);  // Should show light position as RGB - WAS WORKING NOW BORKED
-   //return vec4(colors[0].x, 0.0, 0.0, 1.0);       // Should show light color and intensity - BORKED
+  // return vec4(positions[0].x, 0.0, 0.0, 1.0);  // Should show light position as RGB
+  // return vec4(colors[0].x, 0.0, 0.0, 1.0);       // Should show light color and intensity
+  // return vec4(directions[0].x, 0.0, 0.0, 1.0);
   
   for (int i = 0; i < MAX_LIGHTS; i++) {
-    // Skip inactive lights (check w component)
-    // if (positions[i].w < 0.5) continue;
-    
-    vec3 lightPos = positions[i].xyz;
+    vec3 norm = normalize(Normal);
     vec3 lightColor = colors[i].rgb;
     float lightIntensity = colors[i].a;
-    
-    // Calculate light contribution
-    vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - PositionWorld);
-    
-    // Distance and attenuation
-    float dist = length(lightPos - PositionWorld);
-    float att = 1.0 / (
-      attenuation[i].x + 
-      attenuation[i].y * dist + 
-      attenuation[i].z * (dist * dist)
-    );
-    
-    // Diffuse
-    // float diff = max(dot(norm, lightDir), 0.0); // -1 to 1 lambert, old school
-    float diff = 0.5 + dot(norm, lightDir) * 0.5; // "half lambert", thank you valve!!!
-    vec4 diffuse = diff * vec4(lightColor, 1.0) * att * lightIntensity;
-    
-    // Specular
-    vec3 viewDir = normalize(CameraPositionWorld - PositionWorld);
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), metallic);
-    vec4 specular = specularStrength * spec * vec4(lightColor, 1.0) * att * lightIntensity;
-    
-    // Add light contribution
-    result += (diffuse + specular) * baseColor;
+
+    // Check what type of light to calculate
+    // 0.0 - inactive
+    // 1.0 - point light
+    // 2.0 - directional light
+    // 3.0 - spot light
+    float lightType = positions[i].w;
+    if (lightType == 1.0 || lightType == 3.0) { // point light or spot light
+      vec3 lightPos = positions[i].xyz;
+      vec3 lightDir = normalize(lightPos - PositionWorld);
+      // Distance and attenuation
+      float dist = length(lightPos - PositionWorld);
+      float att = 1.0 / (
+        attenuation[i].x + 
+        attenuation[i].y * dist + 
+        attenuation[i].z * (dist * dist)
+      );
+      // Diffuse
+      float diff = max(dot(norm, lightDir), 0.0); // -1 to 1 lambert, old school
+      // float diff = 0.5 + dot(norm, lightDir) * 0.5; // "half lambert", courtesy of valve
+      vec4 diffuse = diff * vec4(lightColor, 1.0) * att * lightIntensity;
+      // Specular
+      vec3 viewDir = normalize(CameraPositionWorld - PositionWorld);
+      vec3 reflectDir = reflect(-lightDir, norm);
+      float spec = pow(max(dot(viewDir, reflectDir), 0.0), metallic);
+      vec4 specular = specularStrength * spec * vec4(lightColor, 1.0) * att * lightIntensity;
+
+      if (lightType == 3.0) { // handle spot light
+
+      } else { // handle point light
+        // Add light contribution
+        result += (diffuse + specular) * baseColor;
+      }
+
+    } else if (lightType == 2.0) { // directional light
+      // diffuse
+      vec3 lightDir = normalize(-directions[i].xyz);
+      float diff = max(dot(norm, lightDir), 0.0);
+      vec4 diffuse = diff * vec4(lightColor, 1.0) * lightIntensity;
+
+      // specular
+      vec3 viewDir = normalize(CameraPositionWorld - PositionWorld);
+      vec3 reflectDir = reflect(-lightDir, norm);
+      float spec = pow(max(dot(viewDir, reflectDir), 0.0), metallic);
+      vec4 specular = specularStrength * spec * vec4(lightColor, 1.0) * lightIntensity;
+
+      result += (diffuse + specular) * baseColor;
+    } else {
+      continue;
+    }
   }
-  
+ 
   // gamma correction
   result = vec4(pow(result.xyz, vec3(1.0/2.2)), 1.0);
+
   return result;
 }
