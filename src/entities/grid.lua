@@ -1,4 +1,6 @@
 -- src/entities/grid.lua
+local lovr = require 'lovr'
+
 local Grid = {}
 
 -- components

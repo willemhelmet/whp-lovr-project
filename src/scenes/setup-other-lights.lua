@@ -110,14 +110,14 @@ function Scene.init()
 
     })
   }
-  -- Scene.world:add(directionalLight)
+  Scene.world:add(directionalLight)
 
   -- spotlight
   spotLight = {
     Transform = Scene.components.TransformComponent.new(),
     Light = Scene.components.LightComponent.new({
-      color = Vec3(1, 0, 0),
-      intensity = 0.1,
+      color = Vec3(1, 1, 1),
+      intensity = 1.0,
       type = 'spot',
       cutoff = math.pi * 0.0125,
       outerCutoff = math.pi * 0.125
@@ -129,7 +129,7 @@ end
 local position
 local orientation
 function Scene.update(dt)
-  -- Scene.systems.TransformSystem.setOrientation(directionalLight.Transform, Quat(lovr.headset.getTime(), 0, 1, 0))
+  Scene.systems.TransformSystem.setOrientation(directionalLight.Transform, Quat(lovr.headset.getTime(), 0, 1, 0))
   position = Vec3(lovr.headset.getPosition('left'))
   orientation = Quat(lovr.headset.getOrientation('left'))
   Scene.systems.TransformSystem.setPosition(spotLight.Transform, position)

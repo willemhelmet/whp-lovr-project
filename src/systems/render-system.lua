@@ -25,7 +25,6 @@ end
 function RenderSystem.draw(pass)
   local renderables = RenderSystem.entities
 
-
   for _, renderable in pairs(renderables) do
     local transform = renderable.Transform
 
