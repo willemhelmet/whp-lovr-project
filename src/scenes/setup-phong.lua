@@ -35,7 +35,9 @@ local box = Box.new({
   ),
   Material = Scene.components.MaterialComponent.new(
     PhongMaterial, {
-      ambience = { 0.0, 0.0, 0.0, 1.0 },
+      ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
+      diffuseColor = Vec4(1, 1, 1, 1),
+      specularColor = Vec4(1, 1, 1, 1),
       specularStrength = 0.0,
       metallic = 32.0,
     }
@@ -50,7 +52,9 @@ local box2 = Box.new({
   ),
   Material = Scene.components.MaterialComponent.new(
     PhongMaterial, {
-      ambience = { 0.0, 0.0, 0.0, 1.0 },
+      ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
+      diffuseColor = Vec4(1, 1, 1, 1),
+      specularColor = Vec4(1, 1, 1, 1),
       specularStrength = 0.0,
       metallic = 32.0,
     }
@@ -64,7 +68,9 @@ local box3 = Box.new({
   ),
   Material = Scene.components.MaterialComponent.new(
     PhongMaterial, {
-      ambience = { 0.0, 0.0, 0.0, 1.0 },
+      ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
+      diffuseColor = Vec4(1, 1, 1, 1),
+      specularColor = Vec4(1, 1, 1, 1),
       specularStrength = 0.0,
       metallic = 32.0,
     }
@@ -79,7 +85,9 @@ local box4 = Box.new({
   ),
   Material = Scene.components.MaterialComponent.new(
     PhongMaterial, {
-      ambience = { 0.0, 0.0, 0.0, 1.0 },
+      ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
+      diffuseColor = Vec4(1, 1, 1, 1),
+      specularColor = Vec4(1, 1, 1, 1),
       specularStrength = 0.0,
       metallic = 32.0,
     }
@@ -94,7 +102,9 @@ local box5 = Box.new({
   ),
   Material = Scene.components.MaterialComponent.new(
     PhongMaterial, {
-      ambience = { 0.0, 0.0, 0.0, 1.0 },
+      ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
+      diffuseColor = Vec4(1, 1, 1, 1),
+      specularColor = Vec4(1, 1, 1, 1),
       specularStrength = 0.0,
       metallic = 32.0,
     }

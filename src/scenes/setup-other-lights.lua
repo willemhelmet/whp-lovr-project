@@ -58,7 +58,9 @@ function Scene.init()
       ),
       Material = Scene.components.MaterialComponent.new(
         PhongMaterial, {
-          ambience = { 0.0, 0.0, 0.0, 1.0 },
+          ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
+          diffuseColor = Vec4(1, 1, 1, 1),
+          specularColor = Vec4(1, 1, 1, 1),
           specularStrength = 0.0,
           metallic = 32.0,
         }
@@ -76,7 +78,9 @@ function Scene.init()
     ),
     Material = Scene.components.MaterialComponent.new(
       PhongMaterial, {
-        ambience = { 0.0, 0.0, 0.0, 1.0 },
+        ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
+        diffuseColor = Vec4(1, 1, 1, 1),
+        specularColor = Vec4(1, 1, 1, 1),
         specularStrength = 0.0,
         metallic = 32.0
       }

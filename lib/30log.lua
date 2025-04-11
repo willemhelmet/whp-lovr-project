@@ -1,78 +1,50 @@
 local next, assert, pairs, type, tostring, setmetatable, baseMt, _instances, _classes, _class = next, assert, pairs, type,
     tostring, setmetatable, {}, setmetatable({}, { __mode = 'k' }), setmetatable({}, { __mode = 'k' })
-local function assert_call_from_class(class, method)
-  assert(_classes[class],
-    ('Wrong method call. Expected class:%s.'):format(method))
-end; local function assert_call_from_instance(instance,
-                                              method)
-  assert(_instances[instance], ('Wrong method call. Expected instance:%s.'):format(method))
-end
+local function assert_call_from_class(class, method) assert(_classes[class],
+    ('Wrong method call. Expected class:%s.'):format(method)) end; local function assert_call_from_instance(instance,
+                                                                                                            method)
+  assert(_instances[instance], ('Wrong method call. Expected instance:%s.'):format(method)) end
 local function bind(f, v) return function(...) return f(v, ...) end end
 local default_filter = function() return true end
 local function deep_copy(t, dest, aType)
-  t = t or {}; local r = dest or {}; for k, v in pairs(t) do
-    if aType ~= nil and type(v) == aType then
-      r[k] = (type(v) == 'table') and
-          ((_classes[v] or _instances[v]) and v or deep_copy(v)) or v
-    elseif aType == nil then
-      r[k] = (type(v) == 'table') and
-          k ~= '__index' and ((_classes[v] or _instances[v]) and v or deep_copy(v)) or v
-    end;
-  end
+  t = t or {}; local r = dest or {}; for k, v in pairs(t) do if aType ~= nil and type(v) == aType then r[k] = (type(v) == 'table') and
+      ((_classes[v] or _instances[v]) and v or deep_copy(v)) or v elseif aType == nil then r[k] = (type(v) == 'table') and
+      k ~= '__index' and ((_classes[v] or _instances[v]) and v or deep_copy(v)) or v end; end
   return r
 end
 local function instantiate(call_init, self, ...)
   assert_call_from_class(self, 'new(...) or class(...)'); local instance = { class = self }; _instances[instance] =
-      tostring(instance); deep_copy(self, instance, 'table')
+  tostring(instance); deep_copy(self, instance, 'table')
   instance.__index, instance.__subclasses, instance.__instances, instance.mixins = nil, nil, nil, nil; setmetatable(
-    instance, self); if call_init and self.init then
-    if type(self.init) == 'table' then
-      deep_copy(self.init, instance)
-    else
-      self.init(instance, ...)
-    end
-  end; return instance
+  instance, self); if call_init and self.init then if type(self.init) == 'table' then deep_copy(self.init, instance) else
+      self.init(instance, ...) end end; return instance
 end
 local function extend(self, name, extra_params)
   assert_call_from_class(self, 'extend(...)'); local heir = {}; _classes[heir] = tostring(heir); self.__subclasses[heir] = true; deep_copy(
-    extra_params, deep_copy(self, heir))
+  extra_params, deep_copy(self, heir))
   heir.name, heir.__index, heir.super, heir.mixins = extra_params and extra_params.name or name, heir, self, {}; return
-      setmetatable(heir, self)
+  setmetatable(heir, self)
 end
 baseMt = {
   __call = function(self, ...) return self:new(...) end,
   __tostring = function(self, ...)
     if _instances[self] then return ("instance of '%s' (%s)"):format(rawget(self.class, 'name') or '?', _instances[self]) end; return
-        _classes[self] and ("class '%s' (%s)"):format(rawget(self, 'name') or '?', _classes[self]) or self
+    _classes[self] and ("class '%s' (%s)"):format(rawget(self, 'name') or '?', _classes[self]) or self
   end
 }; _classes[baseMt] = tostring(baseMt); setmetatable(baseMt, { __tostring = baseMt.__tostring })
-local class = {
-  isClass = function(t) return not not _classes[t] end,
-  isInstance = function(t)
-    return not not _instances
-        [t]
-  end
-}
+class = { isClass = function(t) return not not _classes[t] end, isInstance = function(t) return not not _instances[t] end }
 _class = function(name, attr)
   local c = deep_copy(attr); _classes[c] = tostring(c)
   c.name, c.__tostring, c.__call, c.new, c.create, c.extend, c.__index, c.mixins, c.__instances, c.__subclasses =
-      name or c.name, baseMt.__tostring, baseMt.__call, bind(instantiate, true), bind(instantiate, false), extend, c,
+  name or c.name, baseMt.__tostring, baseMt.__call, bind(instantiate, true), bind(instantiate, false), extend, c,
       setmetatable({}, { __mode = 'k' }), setmetatable({}, { __mode = 'k' }), setmetatable({}, { __mode = 'k' })
   c.subclasses = function(self, filter, ...)
-    assert_call_from_class(self, 'subclasses(class)'); filter = filter or default_filter; local subclasses = {}; for class in pairs(_classes) do
-      if class ~= baseMt and class:subclassOf(self) and filter(class, ...) then
-        subclasses[#subclasses + 1] =
-            class
-      end
-    end; return subclasses
+    assert_call_from_class(self, 'subclasses(class)'); filter = filter or default_filter; local subclasses = {}; for class in pairs(_classes) do if class ~= baseMt and class:subclassOf(self) and filter(class, ...) then subclasses[#subclasses + 1] =
+        class end end; return subclasses
   end
   c.instances = function(self, filter, ...)
-    assert_call_from_class(self, 'instances(class)'); filter = filter or default_filter; local instances = {}; for instance in pairs(_instances) do
-      if instance:instanceOf(self) and filter(instance, ...) then
-        instances[#instances + 1] =
-            instance
-      end
-    end; return instances
+    assert_call_from_class(self, 'instances(class)'); filter = filter or default_filter; local instances = {}; for instance in pairs(_instances) do if instance:instanceOf(self) and filter(instance, ...) then instances[#instances + 1] =
+        instance end end; return instances
   end
   c.subclassOf = function(self, superclass)
     assert_call_from_class(self, 'subclassOf(superclass)'); assert(class.isClass(superclass),
@@ -91,13 +63,13 @@ _class = function(name, attr)
   c.cast = function(self, toclass)
     assert_call_from_instance(self, 'instanceOf(class)'); assert(class.isClass(toclass),
       'Wrong argument given to method "cast()". Expected a class.'); setmetatable(self, toclass); self.class = toclass; return
-        self
+    self
   end
   c.with = function(self, ...)
     assert_call_from_class(self, 'with(mixin)'); for _, mixin in ipairs({ ... }) do
       assert(self.mixins[mixin] ~= true,
         ('Attempted to include a mixin which was already included in %s'):format(tostring(self))); self.mixins[mixin] = true; deep_copy(
-        mixin, self, 'function')
+      mixin, self, 'function')
     end
     return self
   end
@@ -108,7 +80,7 @@ _class = function(name, attr)
     assert_call_from_class(self, 'without(mixin)'); for _, mixin in ipairs({ ... }) do
       assert(self.mixins[mixin] == true,
         ('Attempted to remove a mixin which is not included in %s'):format(tostring(self))); local classes = self
-          :subclasses(); classes[#classes + 1] = self
+      :subclasses(); classes[#classes + 1] = self
       for _, class in ipairs(classes) do for method_name, method in pairs(mixin) do if type(method) == 'function' then class[method_name] = nil end end end; self.mixins[mixin] = nil
     end; return self
   end; return setmetatable(c, baseMt)

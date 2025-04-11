@@ -26,7 +26,7 @@ local defaults = {
   constant = 1.0,
   linear = 0.07,
   quadratic = 1.8,
-  type = 'point', -- Future: 'directional', 'spot'
+  type = 'point', -- Alternatives: 'directional', 'spot'
   cutoff = 12.5,
   outerCutoff = 17.5
 }

@@ -1,8 +1,10 @@
 # define MAX_LIGHTS 16
 
-uniform vec4 ambience;
 uniform float specularStrength;
 uniform int metallic;
+uniform vec4 ambientColor;
+uniform vec4 diffuseColor;
+uniform vec4 specularColor;
 layout(scalar) uniform Lights {
   vec4 positions[MAX_LIGHTS];   // x, y, z, lightType
   vec4 directions[MAX_LIGHTS];  // ax, ay, az, 0
@@ -11,8 +13,8 @@ layout(scalar) uniform Lights {
 };
 
 vec4 lovrmain() {
-  vec4 baseColor = Color * getPixel(ColorTexture, UV);
-  vec4 result = ambience * baseColor;
+  vec4 baseColor = DefaultColor * diffuseColor;
+  vec4 result = ambientColor * baseColor;
   
   // Debug - uncomment to see specific light info 
   // return vec4(positions[0].x, 0.0, 0.0, 1.0);  // Should show light position as RGB
@@ -42,21 +44,27 @@ vec4 lovrmain() {
       );
 
       // Diffuse
-      float diff = max(dot(norm, lightDir), 0.0); // -1 to 1 lambert, old school
-      // float diff = 0.5 + dot(norm, lightDir) * 0.5; // "half lambert", courtesy of valve
+      // float diff = max(dot(norm, lightDir), 0.0); // -1 to 1 lambert, old school
+      float diff = 0.5 + dot(norm, lightDir) * 0.5; // "half lambert", courtesy of valve
       vec4 diffuse = diff * vec4(lightColor, 1.0) * att * lightIntensity;
 
       // Specular
       vec3 viewDir = normalize(CameraPositionWorld - PositionWorld);
       vec3 reflectDir = reflect(-lightDir, norm);
       float spec = pow(max(dot(viewDir, reflectDir), 0.0), metallic);
-      vec4 specular = specularStrength * spec * vec4(lightColor, 1.0) * att * lightIntensity;
+      vec4 specular = specularStrength *
+        spec *
+        vec4(lightColor, 1.0) *
+        att *
+        lightIntensity *
+        specularColor;
 
       if (lightType == 3.0) { // handle spot light
         // Get the spotlight direction (points FROM the light source)
         vec3 spotDirection = normalize(directions[i].xyz); 
-        // Get the cosine of the angle between the light direction vector and the vector from the light to the fragment
-        float theta = dot(lightDir, -spotDirection); // lightDir points TO the light, so negate spotDirection
+        // Get the cosine of the angle between the light direction vector
+        // and the vector from the light to the fragment
+        float theta = dot(lightDir, -spotDirection);
 
         // Retrieve the cosine of the inner and outer cutoff angles
         // We'll store cos(cutOff) in attenuation.w and cos(outerCutOff) in directions.w
@@ -86,7 +94,11 @@ vec4 lovrmain() {
       vec3 viewDir = normalize(CameraPositionWorld - PositionWorld);
       vec3 reflectDir = reflect(-lightDir, norm);
       float spec = pow(max(dot(viewDir, reflectDir), 0.0), metallic);
-      vec4 specular = specularStrength * spec * vec4(lightColor, 1.0) * lightIntensity;
+      vec4 specular = specularStrength *
+        spec *
+        vec4(lightColor, 1.0) *
+        lightIntensity *
+        specularColor;
 
       result += (diffuse + specular) * baseColor;
     } else {
