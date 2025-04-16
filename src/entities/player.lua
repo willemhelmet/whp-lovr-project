@@ -1,18 +1,18 @@
 -- src/entities/player.lua
-local lovr = require 'lovr'
 
+-- WHP: is this used anymore??
+-- no it is not
+local class = require 'lib.30log'
 local TransformComponent = require 'src.components.transform-component'
 
-local Player = {}
+local Player = class('Player')
 
-function Player.new(options)
-  return {
-    Name = "Player",
-    Player = {},
-    -- Pose = options.Pose or lovr.math.newMat4(),
-    Transform = options.Transform or TransformComponent.new(),
-    Velocity = options.Velocity or lovr.math.newVec3(0, 0, 0)
-  }
+function Player:init(options)
+  options = options or {}
+  self.Player = {}
+  -- Pose = options.Pose or Mat4()
+  self.Transform = options.Transform or TransformComponent()
+  self.Velocity = options.Velocity or Vec3(0, 0, 0)
 end
 
 return Player

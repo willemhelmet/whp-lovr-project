@@ -1,5 +1,6 @@
 -- src/entities/controller.lua
 local lovr = require 'lovr'
+local class = require 'lib.30log'
 
 local MaterialComponent = require 'src.components.material-component'
 local MeshComponent = require 'src.components.mesh-component'
@@ -7,36 +8,32 @@ local MotionTrackingComponent = require 'src.components.motion-tracking-componen
 local PhysicsComponent = require 'src.components.physics-component'
 local TransformComponent = require 'src.components.transform-component'
 
-local Controller = {}
+local Controller = class('Controller')
 
-function Controller.new(hand)
+function Controller:init(hand)
   assert(
-    hand == "left" or
-    hand == "right" or
+    hand == 'left' or
+    hand == 'righ' or
     'Hand must be "left" or "right"'
   )
-
-  return {
-    Name = "Controller " .. hand,
-    Controller = {},
-    Hand = hand,
-    Transform = TransformComponent.new(),
-    Pose = lovr.math.newMat4(),
-    Mesh = MeshComponent.new('/assets/models/quest-' .. hand .. '.glb'),
-    Material = MaterialComponent.new(nil, {}),
-    MotionTracking = MotionTrackingComponent.new(hand),
-    Physics = PhysicsComponent.new({
-      isKinematic = true,
-      friction = 1.0,
-      tag = "controller",
-      shapes = {
-        {
-          type = 'sphere',
-          radius = 0.0625
-        }
+  self.Controller = {}
+  self.Hand = hand
+  self.Transform = TransformComponent()
+  self.Pose = Mat4()
+  self.Mesh = MeshComponent('/assets/models/quest-' .. hand .. '.glb')
+  self.Material = MaterialComponent(nil, {})
+  self.MotionTracking = MotionTrackingComponent.new(hand)
+  self.Physics = PhysicsComponent({
+    isKinematic = true,
+    friction = 1.0,
+    tag = "controller",
+    shapes = {
+      {
+        type = 'sphere',
+        radius = 0.0625
       }
-    })
-  }
+    }
+  })
 end
 
 return Controller

@@ -1,3 +1,4 @@
+-- TODO: BORKED
 -- src/scenes/setup-player-2.lua
 -- lib
 local tiny = require 'lib.tiny'
@@ -20,7 +21,7 @@ Scene.systems = {}
 utils.import(Systems, Scene.systems)
 
 -- vr rig
-local vrRig = { VRRig.new() }
+local vrRig = { VRRig }
 
 function Scene.init()
   for _, system in pairs(Scene.systems) do
@@ -28,7 +29,7 @@ function Scene.init()
   end
   Scene.world:add(InputDebug.new())
   Scene.world:add(table.unpack(vrRig))
-  Scene.world:add(Grid.new())
+  Scene.world:add(Grid())
 end
 
 function Scene.update(dt)

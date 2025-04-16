@@ -1,9 +1,6 @@
 -- src/scenes/setup-other-lights.lua
 local Scene = {}
 -- lib
-local lovr = require 'lovr'
-local Vec3 = lovr.math.newVec3
-local Quat = lovr.math.newQuat
 local tiny = require 'lib.tiny'
 local utils = require 'lib.pl.utils'
 local pretty = require 'lib.pl.pretty'
@@ -11,6 +8,7 @@ local pretty = require 'lib.pl.pretty'
 local Grid = require 'src.entities.grid'
 local VrRig = require 'src.entities.vr-rig-entity'
 local Box = require 'src.entities.box'
+local Suzanne = require 'src.entities.suzanne'
 local pointLight
 local directionalLight
 local spotLight
@@ -31,7 +29,7 @@ function Scene.init()
   for _, system in pairs(Scene.systems) do
     Scene.world:add(system)
   end
-  Scene.world:add(VrRig.new())
+  -- Scene.world:add(VrRig.new()) -- Borked
 
   -- Add some random boxes
   local numBoxes = 15
@@ -46,17 +44,18 @@ function Scene.init()
     local z = -3 + math.sin(angle) * dist
     local y = minHeight + math.random() * (maxHeight - minHeight)
 
-    local box = Box.new({
-      Transform = Scene.components.TransformComponent.new(
+    local suzanne = Suzanne({
+      Transform = Scene.components.TransformComponent(
         Vec3(x, y, z),
         Quat(
           math.random(),
           math.random(),
           math.random(),
           math.random()
-        ):normalize()
+        ):normalize(),
+        Vec3(0.5, 0.5, 0.5)
       ),
-      Material = Scene.components.MaterialComponent.new(
+      Material = Scene.components.MaterialComponent(
         PhongMaterial, {
           ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
           diffuseColor = Vec4(1, 1, 1, 1),
@@ -66,17 +65,17 @@ function Scene.init()
         }
       )
     })
-    Scene.world:addEntity(box)
+    Scene.world:add(suzanne)
   end
 
   -- floor
-  local floor = Box.new({
-    Transform = Scene.components.TransformComponent.new(
+  local floor = Box({
+    Transform = Scene.components.TransformComponent(
       Vec3(0, 0, 0),
       Quat(),
       Vec3(200, 0.01, 200)
     ),
-    Material = Scene.components.MaterialComponent.new(
+    Material = Scene.components.MaterialComponent(
       PhongMaterial, {
         ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
         diffuseColor = Vec4(1, 1, 1, 1),
@@ -90,10 +89,10 @@ function Scene.init()
 
   -- point light
   pointLight = {
-    Transform = Scene.components.TransformComponent.new(
+    Transform = Scene.components.TransformComponent(
       Vec3(0, 1, -3)
     ),
-    Light = Scene.components.LightComponent.new({
+    Light = Scene.components.LightComponent({
       color = Vec3(1, 1, 1),
       intensity = 0.01,
       type = 'point'
@@ -103,11 +102,11 @@ function Scene.init()
 
   -- directional light
   directionalLight = {
-    Transform = Scene.components.TransformComponent.new(
+    Transform = Scene.components.TransformComponent(
       Vec3(0, 0, 0),
       Quat(1, 0, 0, 0)
     ),
-    Light = Scene.components.LightComponent.new({
+    Light = Scene.components.LightComponent({
       color = Vec3(0, 1, 0),
       intensity = 0.01,
       type = 'directional',
@@ -118,8 +117,8 @@ function Scene.init()
 
   -- spotlight
   spotLight = {
-    Transform = Scene.components.TransformComponent.new(),
-    Light = Scene.components.LightComponent.new({
+    Transform = Scene.components.TransformComponent(),
+    Light = Scene.components.LightComponent({
       color = Vec3(1, 1, 1),
       intensity = 1.0,
       type = 'spot',

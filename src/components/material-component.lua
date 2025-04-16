@@ -5,13 +5,11 @@
 -- Controls how light interacts with surfaces, textures, colors and other
 -- visual characteristics of entities.
 
-local MaterialComponent = {}
+local MaterialComponent = class('Material')
 
-function MaterialComponent.new(shader, uniforms)
-  return {
-    shader = shader,
-    values = uniforms or {}
-  }
+function MaterialComponent:init(shader, uniforms)
+  self.shader = shader
+  self.values = uniforms or {}
 end
 
 return MaterialComponent

@@ -24,43 +24,41 @@ local UnlitColorMaterial = require 'assets.materials.unlit-color-material'
 SetupTransform = {}
 SetupTransform.tiny = tiny.world(TransformSystem, MotionTrackingSystem, RenderSystem)
 
-local boxParent = Box.new({
-  Transform = TransformComponent.new(
-    lovr.math.newVec3(0, 1.5, -4),
-    lovr.math.newQuat(1, 0, 0, 0),
-    lovr.math.newVec3(1, 1, 1)
+local boxParent = Box({
+  Transform = TransformComponent(
+    Vec3(0, 1.5, -4),
+    Quat(1, 0, 0, 0),
+    Vec3(1, 1, 1)
   ),
-  Material = MaterialComponent.new(UnlitColorMaterial, { color = lovr.math.newVec3(.4, .2, 1) })
+  Material = MaterialComponent(UnlitColorMaterial, { color = Vec3(.4, .2, 1) })
 })
-local boxChild = Box.new({
-  Transform = TransformComponent.new(
-    lovr.math.newVec3(0, 2.6, -4),
-    lovr.math.newQuat(1, 0, 0, 0),
-    lovr.math.newVec3(1, 0.25, 1)
+local boxChild = Box({
+  Transform = TransformComponent(
+    Vec3(0, 2.6, -4),
+    Quat(1, 0, 0, 0),
+    Vec3(1, 0.25, 1)
   ),
-  Material = MaterialComponent.new(UnlitColorMaterial, { color = lovr.math.newVec3(1, 1, 1) })
+  Material = MaterialComponent(UnlitColorMaterial, { color = Vec3(1, 1, 1) })
 })
 
 function SetupTransform.init()
-  print('hi setuptransorm')
-  local grid = Grid.new()
-  SetupTransform.tiny:addEntity(grid)
+  SetupTransform.tiny:addEntity(Grid())
   TransformSystem.addChild(boxParent.Transform, boxChild.Transform)
   SetupTransform.tiny:addEntity(boxParent)
   SetupTransform.tiny:addEntity(boxChild)
 end
 
-function floatingSquares()
-  TransformSystem.setPosition(boxParent.Transform, lovr.math.newVec3(math.sin(lovr.headset.getTime()), 1.5, -4))
+function SetupTransform.animateFloatingSquare()
+  TransformSystem.setPosition(boxParent.Transform, Vec3(math.sin(lovr.headset.getTime()), 1.5, -4))
   TransformSystem.setOrientation(boxParent.Transform,
-    lovr.math.newQuat(lovr.headset.getTime(), 0, 1, math.sin(lovr.headset.getTime())))
+    Quat(lovr.headset.getTime(), 0, 1, math.sin(lovr.headset.getTime())))
   local scale = 0.25 * math.sin(lovr.headset.getTime()) + 0.75
-  TransformSystem.setScale(boxParent.Transform, lovr.math.newVec3(scale, scale, scale))
+  TransformSystem.setScale(boxParent.Transform, Vec3(scale, scale, scale))
   SetupTransform.tiny:addEntity(boxParent)
 end
 
 function SetupTransform.update(dt)
-  floatingSquares()
+  SetupTransform.animateFloatingSquare()
   SetupTransform.tiny:update(dt)
 end
 

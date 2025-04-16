@@ -1,10 +1,6 @@
 -- src/scenes/setup-materials.lua
 
 -- lib
-local lovr = require 'lovr'
-local Vec3 = lovr.math.newVec3
-local Vec4 = lovr.math.newVec4
-local Quat = lovr.math.newQuat
 local tiny = require 'lib.tiny'
 local pretty = require 'lib.pl.pretty'
 local utils = require 'lib.pl.utils'
@@ -182,14 +178,14 @@ local materials = {
 }
 
 local suzannes = {}
-function generateSuzeanne(x, y, i)
-  local suzanne = Suzanne.new({
-    Transform = Scene.components.TransformComponent.new(
+function Scene.generateSuzeanne(x, y, i)
+  local suzanne = Suzanne({
+    Transform = Scene.components.TransformComponent(
       Vec3(x, y, -3),
       Quat(),
       Vec3(0.25, 0.25, 0.25)
     ),
-    Material = Scene.components.MaterialComponent.new(
+    Material = Scene.components.MaterialComponent(
       PhongMaterial, {
         specularStrength = 0.0,
         metallic = materials[materialNames[i]].metalness,
@@ -203,11 +199,11 @@ function generateSuzeanne(x, y, i)
 end
 
 local directionalLight = {
-  Transform = Scene.components.TransformComponent.new(
+  Transform = Scene.components.TransformComponent(
     Vec3(0, 0, 0),
     Quat(1, -math.pi * 0.25, -math.pi * 0.25, 0)
   ),
-  Light = Scene.components.LightComponent.new({
+  Light = Scene.components.LightComponent({
     color = Vec3(1, 1, 1),
     intensity = 0.08,
     type = 'directional',
@@ -221,8 +217,8 @@ function Scene.init()
   for _, system in pairs(Scene.systems) do
     Scene.world:add(system)
   end
-  -- player, world
-  Scene.world:add(VrRig.new(), Grid.new())
+  -- Scene.world:add(VrRig.new()) -- BORKED
+  Scene.world:add(Grid())
   -- suzannes
   local rows = 4
   local cols = 6
@@ -232,7 +228,7 @@ function Scene.init()
   for row = 1, rows do
     for col = 1, cols do
       x = x + 0.75
-      table.insert(suzannes, generateSuzeanne(x, y, i))
+      table.insert(suzannes, Scene.generateSuzeanne(x, y, i))
       table.insert(materialLabelLocations, Vec3(x, y + 0.35, -3))
       i = i + 1
     end

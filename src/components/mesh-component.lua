@@ -5,16 +5,11 @@
 -- Used by the Render System in conjunction with Material and Transform
 -- components to draw the entity in the world.
 
-local lovr = require 'lovr'
 
-local MeshComponent = {
-  model = nil,
-}
+local MeshComponent = class('Mesh')
 
-function MeshComponent.new(model)
-  return {
-    model = lovr.graphics.newModel(model),
-  }
+function MeshComponent:init(model)
+  self.model = lovr.graphics.newModel(model)
 end
 
 return MeshComponent

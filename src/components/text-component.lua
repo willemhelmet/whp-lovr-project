@@ -1,19 +1,18 @@
 -- src/components/text-component
 
-local TextComponent = {}
+local class = require 'lib.30log'
 
+local TextComponent = class('Text')
 
-function TextComponent.new(text, size, halign, valign)
-  local comp = {}
-  comp.text = text or ""
-  comp.size = size or 1
-  comp.halign = halign or 'center'
-  comp.valign = valign or 'middle'
-  function comp:setText(text)
-    self.text = text
-  end
+function TextComponent:init(text, size, halign, valign)
+  self.text = text or ""
+  self.size = size or 1
+  self.halign = halign or 'center'
+  self.valign = valign or 'middle'
+end
 
-  return comp
+function TextComponent:setText(newText)
+  self.text = newText
 end
 
 return TextComponent

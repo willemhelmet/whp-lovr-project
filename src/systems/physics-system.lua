@@ -8,11 +8,13 @@
 
 local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
--- local pretty = require 'lib.pl.pretty'
+local pretty = require 'lib.pl.pretty'
 local phywire = require 'lib.phywire'
 
 local PhysicsSystem = tiny.processingSystem()
 PhysicsSystem.filter = tiny.requireAll('Physics', 'Transform')
+
+local TransformSystem = require 'src.systems.transform-system'
 
 local world = lovr.physics.newWorld({
   restitutionThreshold = .05,
@@ -87,14 +89,14 @@ function PhysicsSystem:process(e, dt)
     if not physics.isKinematic then
       -- For dynamic objects, update the Transform from the physics simulation.
       local x, y, z = physics.collider:getPosition()
-      transform.position = { x, y, z }
+      TransformSystem.setPosition(transform, Vec3(x, y, z))
       local angle, ax, ay, az = physics.collider:getOrientation()
-      transform.orientation = { angle, ax, ay, az }
+      TransformSystem.setOrientation(transform, Quat(angle, ax, ay, az))
     else
       -- For kinematic objects, push the Transform's data into the physics collider.
-      local pos = transform.position
-      local rot = transform.orientation
-      physics.collider:setPose(pos[1], pos[2], pos[3], rot[1], rot[2], rot[3], rot[4])
+      local pos = Vec3(transform.localPosition)
+      local angle, ax, ay, az = transform.localOrientation
+      physics.collider:setPose(pos.x, pos.y, pos.z, angle, ax, ay, az)
     end
   end
 end

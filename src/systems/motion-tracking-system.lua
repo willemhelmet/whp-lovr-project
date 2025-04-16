@@ -4,12 +4,8 @@
 -- Essential for controller representation and hand presence in VR.
 
 -- lib
-local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 local pretty = require 'lib.pl.pretty'
-local Vec3 = lovr.math.newVec3
-local Quat = lovr.math.newQuat
-local Mat4 = lovr.math.newMat4
 
 local TransformSystem = require 'src.systems.transform-system'
 
@@ -36,7 +32,6 @@ function MotionTracking:process(e, dt)
   local device = e.MotionTracking.device
 
   if (lovr.headset.isTracked(device)) then
-    -- Update local transform (relative to parent)
     TransformSystem.setPosition(transform, Vec3(MotionTracking.getPosition(device)))
     TransformSystem.setOrientation(transform, Quat(MotionTracking.getOrientation(device)))
   end

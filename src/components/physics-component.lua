@@ -5,28 +5,27 @@
 -- and dynamic behavior settings (kinematic state, mass, damping).
 -- Used by the Physics System to simulate realistic physical interactions.
 
-local PhysicsComponent = {}
+local PhysicsComponent = class('Physics')
 
-function PhysicsComponent.new(options)
+function PhysicsComponent:init(options)
   local options = options or {}
-  local comp = {}
-  comp.collider = nil -- Set later by the PhysicsSystem
-  comp.shapes = options.shapes or {}
-  comp.tag = options.tag or "default"
-  comp.isKinematic = options.isKinematic or false
-  comp.isSensor = options.isSensor or false
-  comp.friction = options.friction or 0.5
-  comp.restitution = options.restitution or 0.2
-  comp.gravityScale = options.gravityScale or 1
-  comp.mass = options.mass -- nil means use automatic mass calculation
-  comp.linearDamping = options.linearDamping or 0.0
-  comp.angularDamping = options.angularDamping or 0.05
-  comp.continuous = options.continuous or false
-  comp.degreesOfFreedom = options.degreesOfFreedom -- e.g., { x = true, y = false, z = true }
-  comp.collisionGroups = options.collisionGroups or {}
-  comp.offset = options.offset or { 0, 0, 0 }      -- Optional offset relative to the TransformComponent
-  comp.userData = options.userData or nil
-  return comp
+
+  self.collider = nil -- Set later by the PhysicsSystem
+  self.shapes = options.shapes or {}
+  self.tag = options.tag or "default"
+  self.isKinematic = options.isKinematic or false
+  self.isSensor = options.isSensor or false
+  self.friction = options.friction or 0.5
+  self.restitution = options.restitution or 0.2
+  self.gravityScale = options.gravityScale or 1
+  self.mass = options.mass -- nil means use automatic mass calculation
+  self.linearDamping = options.linearDamping or 0.0
+  self.angularDamping = options.angularDamping or 0.05
+  self.continuous = options.continuous or false
+  self.degreesOfFreedom = options.degreesOfFreedom -- e.g., { x = true, y = false, z = true }
+  self.collisionGroups = options.collisionGroups or {}
+  self.offset = options.offset or { 0, 0, 0 }      -- Optional offset relative to the TransformComponent
+  self.userData = options.userData or nil
 end
 
 return PhysicsComponent

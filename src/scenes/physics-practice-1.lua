@@ -1,7 +1,7 @@
 -- src/scenes/physics-practice-1.lua
 
 -- core
-local Input = require 'src.core.input'
+-- local Input = require 'src.core.input'
 
 -- libraries
 local lovr = require 'lovr'
@@ -24,12 +24,13 @@ local JointSystem = require 'src.systems.joint-system'
 local PhysicsSystem = require 'src.systems.physics-system'
 local MotionTrackingSystem = require 'src.systems.motion-tracking-system'
 local RenderSystem = require 'src.systems.render-system'
+local InputSystem = require 'src.systems.input-system'
 
 -- assets
-local UnlitColorMaterial = require 'assets.shaders.unlit-color.unlit-color-material'
+local UnlitColorMaterial = require 'assets.materials.unlit-color-material'
 
 local NewtonsCradle = {}
-NewtonsCradle.world = tiny.world(PhysicsSystem, MotionTrackingSystem, RenderSystem, JointSystem)
+NewtonsCradle.world = tiny.world(InputSystem, PhysicsSystem, MotionTrackingSystem, RenderSystem, JointSystem)
 NewtonsCradle.world:setSystemIndex(PhysicsSystem, 1)
 NewtonsCradle.world:setSystemIndex(JointSystem, 2)
 
@@ -44,19 +45,23 @@ local gap = 0.01
 local controllerBoxes = {}
 
 function NewtonsCradle.init()
-  NewtonsCradle.world:addEntity(Grid.new())
+  NewtonsCradle.world:addEntity(Grid())
   -- static geometry from which balls are suspended
   local size = lovr.math.vec3(1.2, 0.1, 0.3)
   frame = {
-    Transform = TransformComponent.new(0, 2, -2, 0, 0, 0, 0, 1.2, 0.1, 0.3),
-    Mesh = MeshComponent.new("/assets/models/primitives/cube.glb"),
-    Material = MaterialComponent.new(UnlitColorMaterial, {
-      color = lovr.math.newVec3(
+    Transform = TransformComponent(
+      Vec3(0, 2, -2),
+      Quat(0, 0, 0, 0),
+      Vec3(1.2, 0.1, 0.3)
+    ),
+    Mesh = MeshComponent("/assets/models/primitives/cube.glb"),
+    Material = MaterialComponent(UnlitColorMaterial, {
+      color = Vec3(
         lovr.math.random(),
         lovr.math.random(),
         lovr.math.random())
     }),
-    Physics = PhysicsComponent.new({
+    Physics = PhysicsComponent({
       isKinematic = true,
       shapes = {
         {
@@ -72,15 +77,19 @@ function NewtonsCradle.init()
   -- create balls along length of frame
   for x = -0.5, 0.5, 1 / count do
     local ball = {}
-    ball.Transform = TransformComponent.new(x, 1, -2, 0, 0, 0, 0, radius, radius, radius)
-    ball.Mesh = MeshComponent.new('/assets/models/primitives/sphere.glb')
-    ball.Material = MaterialComponent.new(UnlitColorMaterial, {
-      color = lovr.math.newVec3(
+    ball.Transform = TransformComponent(
+      Vec3(x, 1, -2),
+      Quat(0, 0, 0, 0),
+      Vec3(radius, radius, radius)
+    )
+    ball.Mesh = MeshComponent('/assets/models/primitives/sphere.glb')
+    ball.Material = MaterialComponent(UnlitColorMaterial, {
+      color = Vec3(
         lovr.math.random(),
         lovr.math.random(),
         lovr.math.random())
     })
-    ball.Physics = PhysicsComponent.new({
+    ball.Physics = PhysicsComponent({
       restitution = 1.0,
       shapes = {
         {
@@ -89,20 +98,20 @@ function NewtonsCradle.init()
         }
       }
     })
-    ball.Joint = JointComponent.new({
+    ball.Joint = JointComponent({
       {
         type = 'distance',
         entityA = frame,
         entityB = ball,
-        anchorPosition = lovr.math.newVec3(x, 2, -2 + 0.25),
-        anchorPosition2 = lovr.math.newVec3(x, 1, -2)
+        anchorPosition = Vec3(x, 2, -2 + 0.25),
+        anchorPosition2 = Vec3(x, 1, -2)
       },
       {
         type = 'distance',
         entityA = frame,
         entityB = ball,
-        anchorPosition = lovr.math.newVec3(x, 2, -2 - 0.25),
-        anchorPosition2 = lovr.math.newVec3(x, 1, -2)
+        anchorPosition = Vec3(x, 2, -2 - 0.25),
+        anchorPosition2 = Vec3(x, 1, -2)
       }
     })
     NewtonsCradle.world:addEntity(ball)

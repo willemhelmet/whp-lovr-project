@@ -1,49 +1,45 @@
 -- src/entities/grid.lua
 local lovr = require 'lovr'
-
-local Grid = {}
+local class = require 'lib.30log'
 
 -- components
 local TransformComponent = require 'src.components.transform-component'
 local MeshComponent = require 'src.components.mesh-component'
 local MaterialComponent = require 'src.components.material-component'
 local PhysicsComponent = require 'src.components.physics-component'
-
 -- materials
 local GridMaterial = require 'assets.materials.grid-material'
 
-function Grid.new()
-  return {
-    Name = "Grid",
-    Transform = TransformComponent.new(
-      lovr.math.newVec3(0, 0, 0),
-      lovr.math.newQuat(1, 0, 0, 0),
-      lovr.math.newVec3(200, 200, 200)
-    ),
-    Mesh = MeshComponent.new('/assets/models/primitives/plane.glb'),
-    Material = MaterialComponent.new(
-      GridMaterial,
+local Grid = class('Grid')
+
+function Grid:init()
+  self.Transform = TransformComponent(
+    Vec3(0, 0, 0),
+    Quat(1, 0, 0, 0),
+    Vec3(200, 200, 200)
+  )
+  self.Mesh = MeshComponent('/assets/models/primitives/plane.glb')
+  self.Material = MaterialComponent(
+    GridMaterial,
+    {
+      lineWidth = 0.005,
+      background = { 0.05, 0.05, 0.05 },
+      foreground = { 0.5, 0.5, 0.5 }
+    }
+  )
+  self.Physics = PhysicsComponent({
+    isKinematic = true,
+    offset = { 0, -0.005, 0 },
+    shapes = {
       {
-        lineWidth = 0.005,
-        background = { 0.05, 0.05, 0.05 },
-        foreground = { 0.5, 0.5, 0.5 }
-      }
-    ),
-    Physics = PhysicsComponent.new({
-      isKinematic = true,
-      offset = { 0, -0.005, 0 },
-      shapes = {
-        {
-          type = 'box',
-          width = 200,
-          height = 0.01,
-          depth = 200
-        }
+        type = 'box',
+        width = 200,
+        height = 0.01,
+        depth = 200
       }
     }
-
-    )
   }
+  )
 end
 
 return Grid

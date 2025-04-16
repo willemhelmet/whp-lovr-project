@@ -23,7 +23,7 @@ local plane
 
 function PassSidequest.init()
   -- Grid
-  PassSidequest.world:addEntity(Grid.new())
+  PassSidequest.world:addEntity(Grid())
 
   -- plane
   plane = lovr.graphics.newModel('/assets/models/primitives/plane.glb')
@@ -34,9 +34,9 @@ function PassSidequest.init()
     local y = math.sin(i) + 1.5
     local z = -2
     local ball = {
-      Transform = TransformComponent.new(x, y, z, 0, 0, 0, 0, .1, .1, .1),
-      Mesh = MeshComponent.new("/assets/models/primitives/sphere.glb"),
-      Material = MaterialComponent.new(nil, {})
+      Transform = TransformComponent(x, y, z, 0, 0, 0, 0, .1, .1, .1),
+      Mesh = MeshComponent("/assets/models/primitives/sphere.glb"),
+      Material = MaterialComponent(nil, {})
     }
     balls[i] = ball
     PassSidequest.world:addEntity(ball)

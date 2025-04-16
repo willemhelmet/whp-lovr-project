@@ -1,7 +1,6 @@
 --src/scenes/setup-grab.lua
 
 -- lib
-local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 
 -- entities
@@ -15,7 +14,6 @@ local Table = require 'src.entities.table'
 -- components
 local TransformComponent = require 'src.components.transform-component'
 local PhysicsComponent = require 'src.components.physics-component'
-local MaterialComponent = require 'src.components.material-component'
 local TextComponent = require 'src.components.text-component'
 local GrabbableComponent = require 'src.components.grabbable-component'
 
@@ -32,18 +30,18 @@ local GrabSetup = {}
 GrabSetup.world = tiny.world(InputSystem, JointSystem, PhysicsSystem, MotionTrackingSystem, RenderSystem, GrabSystem)
 
 function GrabSetup.init()
-  GrabSetup.world:addEntity(Grid.new())
-  GrabSetup.world:addEntity(Controller.new('left'))
+  GrabSetup.world:addEntity(Grid())
+  GrabSetup.world:addEntity(Controller('left'))
   -- GrabSetup.world:add(table.unpack(Table.new({ 0, 0, -2 })))
 
   -- grabbable box
-  GrabbableBox = Box.new({
-    Transform = TransformComponent.new(
+  GrabbableBox = Box({
+    Transform = TransformComponent(
       Vec3(0, 2, -2),
       Quat(1, 0, 0, 0),
       Vec3(0.25, 0.25, 0.25)
     ),
-    Physics = PhysicsComponent.new({
+    Physics = PhysicsComponent({
       isKinematic = false,
       shapes = {
         {
@@ -54,16 +52,16 @@ function GrabSetup.init()
         }
       }
     }),
-    Grabbable = GrabbableComponent.new()
+    Grabbable = GrabbableComponent()
   })
   GrabSetup.world:addEntity(GrabbableBox)
 
   -- text
   GrabTextEntity = {
-    Transform = TransformComponent.new(
-      0, 2, -4
+    Transform = TransformComponent(
+      Vec3(0, 2, -4)
     ),
-    Text = TextComponent.new(
+    Text = TextComponent(
       'left grip: ', 0.25
     )
   }

@@ -6,43 +6,35 @@ local MotionTrackingComponent = require 'src.components.motion-tracking-componen
 local MeshComponent = require 'src.components.mesh-component'
 local MaterialComponent = require 'src.components.material-component'
 
-local VRRig = {}
+local VRRig = class('VR Rig')
 
-function VRRig.new()
-  local entities = {}
-
-  local vrRig = {}
-  vrRig.Name = 'VR Rig'
-  vrRig.VRRig = {}
-  vrRig.Transform = TransformComponent.new()
-  table.insert(entities, vrRig)
+function VRRig:init()
+  self.vrRig = {}
+  self.vrRig.Name = 'VR Rig'
+  self.vrRig.VRRig = {}
+  self.vrRig.Transform = TransformComponent.new()
 
   local vrCamera = {}
-  vrCamera.Name = "VR Camera"
-  vrCamera.Transform = TransformComponent.new()
-  vrCamera.MotionTracking = MotionTrackingComponent.new('head')
-  TransformSystem.addChild(vrRig.Transform, vrCamera.Transform)
-  table.insert(entities, vrCamera)
+  self.vrCamera.Name = "VR Camera"
+  self.vrCamera.Transform = TransformComponent()
+  self.vrCamera.MotionTracking = MotionTrackingComponent.new('head')
+  TransformSystem.addChild(self.vrRig.Transform, vrCamera.Transform)
 
   local vrControllerLeft = {}
-  vrControllerLeft.Name = "VR Controller Left"
-  vrControllerLeft.Transform = TransformComponent.new()
-  vrControllerLeft.Mesh = MeshComponent.new('/assets/models/quest-left.glb')
-  vrControllerLeft.Material = MaterialComponent.new(nil, {})
-  vrControllerLeft.MotionTracking = MotionTrackingComponent.new('left')
-  TransformSystem.addChild(vrRig.Transform, vrControllerLeft.Transform)
-  table.insert(entities, vrControllerLeft)
+  self.vrControllerLeft.Name = "VR Controller Left"
+  self.vrControllerLeft.Transform = TransformComponent()
+  self.vrControllerLeft.Mesh = MeshComponent('/assets/models/quest-left.glb')
+  self.vrControllerLeft.Material = MaterialComponent(nil, {})
+  self.vrControllerLeft.MotionTracking = MotionTrackingComponent.new('left')
+  TransformSystem.addChild(self.vrRig.Transform, vrControllerLeft.Transform)
 
   local vrControllerRight = {}
-  vrControllerRight.Name = "VR Controller Right"
-  vrControllerRight.Transform = TransformComponent.new()
-  vrControllerRight.Mesh = MeshComponent.new('/assets/models/quest-right.glb')
-  vrControllerRight.Material = MaterialComponent.new(nil, {})
-  vrControllerRight.MotionTracking = MotionTrackingComponent.new('right')
-  TransformSystem.addChild(vrRig.Transform, vrControllerRight.Transform)
-  table.insert(entities, vrControllerRight)
-
-  return table.unpack(entities)
+  self.vrControllerRight.Name = "VR Controller Right"
+  self.vrControllerRight.Transform = TransformComponent()
+  self.vrControllerRight.Mesh = MeshComponent('/assets/models/quest-right.glb')
+  self.vrControllerRight.Material = MaterialComponent(nil, {})
+  self.vrControllerRight.MotionTracking = MotionTrackingComponent.new('right')
+  TransformSystem.addChild(self.vrRig.Transform, vrControllerRight.Transform)
 end
 
 return VRRig

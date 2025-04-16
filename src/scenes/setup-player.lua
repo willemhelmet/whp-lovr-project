@@ -26,32 +26,32 @@ SetupPlayerScene.world = tiny.world(TransformSystem, MotionTrackingSystem, Rende
 
 
 -- local entities
-local player = Player.new({})
-local leftController = Controller.new('left')
+local player = Player()
+local leftController = Controller('left')
 
 local playerPosText = {
-  Transform = TransformComponent.new(
-    lovr.math.newVec3(0, 1.5, -2)
+  Transform = TransformComponent(
+    Vec3(0, 1.5, -2)
   ),
-  Text = TextComponent.new(
+  Text = TextComponent(
     'Player Position',
     0.25
   )
 }
 local headsetPosText = {
-  Transform = TransformComponent.new(
-    lovr.math.newVec3(0, 2.0, -2)
+  Transform = TransformComponent(
+    Vec3(0, 2.0, -2)
   ),
-  Text = TextComponent.new(
+  Text = TextComponent(
     'Headset Position',
     0.25
   )
 }
 local combinedPosText = {
-  Transform = TransformComponent.new(
-    lovr.math.newVec3(0, 1.0, -2)
+  Transform = TransformComponent(
+    Vec3(0, 1.0, -2)
   ),
-  Text = TextComponent.new(
+  Text = TextComponent(
     'Combined Position',
     0.25
   )
@@ -68,7 +68,7 @@ function SetupPlayerScene.init()
   SetupPlayerScene.world:addEntity(leftController)
 
   -- Add other entities
-  SetupPlayerScene.world:addEntity(Grid.new())
+  SetupPlayerScene.world:addEntity(Grid())
 
   SetupPlayerScene.world:addEntity(playerPosText)
   SetupPlayerScene.world:addEntity(headsetPosText)
@@ -87,7 +87,7 @@ function SetupPlayerScene.update(dt)
 end
 
 function SetupPlayerScene.draw(pass)
-  pass:transform(TransformSystem.toMat4(player.Transform):invert())
+  -- pass:transform(TransformSystem.toMat4(player.Transform):invert())
   RenderSystem.draw(pass)
   pass:setShader()
   pass:sphere(lovr.math.vec3(player.Transform.position), 0.25)

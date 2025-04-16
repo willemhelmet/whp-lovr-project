@@ -1,10 +1,5 @@
 -- src/scenes/setup-phong.lua
 
--- lovr
-local lovr = require 'lovr'
-local Quat = lovr.math.newQuat
-local Vec3 = lovr.math.newVec3
-local Vec4 = lovr.math.newVec4
 -- lib
 local tiny = require 'lib.tiny'
 local utils = require 'lib.pl.utils'
@@ -27,13 +22,13 @@ utils.import(systemRegistry, Scene.systems)
 -- assets
 local PhongMaterial = require 'assets.materials.phong-material'
 
-local box = Box.new({
-  Transform = Scene.components.TransformComponent.new(
+local box = Box({
+  Transform = Scene.components.TransformComponent(
     Vec3(0, 0, 0),
     Quat(),
     Vec3(500, 0.1, 500)
   ),
-  Material = Scene.components.MaterialComponent.new(
+  Material = Scene.components.MaterialComponent(
     PhongMaterial, {
       ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
       diffuseColor = Vec4(1, 1, 1, 1),
@@ -44,13 +39,13 @@ local box = Box.new({
   )
 })
 
-local box2 = Box.new({
-  Transform = Scene.components.TransformComponent.new(
+local box2 = Box({
+  Transform = Scene.components.TransformComponent(
     Vec3(-2, 5, -5),
     Quat(),
     Vec3(1, 10, 1)
   ),
-  Material = Scene.components.MaterialComponent.new(
+  Material = Scene.components.MaterialComponent(
     PhongMaterial, {
       ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
       diffuseColor = Vec4(1, 1, 1, 1),
@@ -60,13 +55,13 @@ local box2 = Box.new({
     }
   )
 })
-local box3 = Box.new({
-  Transform = Scene.components.TransformComponent.new(
+local box3 = Box({
+  Transform = Scene.components.TransformComponent(
     Vec3(2, 5, -5),
     Quat(),
     Vec3(1, 10, 1)
   ),
-  Material = Scene.components.MaterialComponent.new(
+  Material = Scene.components.MaterialComponent(
     PhongMaterial, {
       ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
       diffuseColor = Vec4(1, 1, 1, 1),
@@ -77,13 +72,13 @@ local box3 = Box.new({
   )
 })
 
-local box4 = Box.new({
-  Transform = Scene.components.TransformComponent.new(
+local box4 = Box({
+  Transform = Scene.components.TransformComponent(
     Vec3(2, 5, -10),
     Quat(),
     Vec3(1, 10, 1)
   ),
-  Material = Scene.components.MaterialComponent.new(
+  Material = Scene.components.MaterialComponent(
     PhongMaterial, {
       ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
       diffuseColor = Vec4(1, 1, 1, 1),
@@ -94,13 +89,13 @@ local box4 = Box.new({
   )
 })
 
-local box5 = Box.new({
-  Transform = Scene.components.TransformComponent.new(
+local box5 = Box({
+  Transform = Scene.components.TransformComponent(
     Vec3(-2, 5, -10),
     Quat(),
     Vec3(1, 10, 1)
   ),
-  Material = Scene.components.MaterialComponent.new(
+  Material = Scene.components.MaterialComponent(
     PhongMaterial, {
       ambientColor = Vec4(0.0, 0.0, 0.0, 1.0),
       diffuseColor = Vec4(1, 1, 1, 1),
@@ -117,10 +112,10 @@ local option = 1
 
 -- Create multiple point lights
 local pointLight1 = {
-  Transform = Scene.components.TransformComponent.new(
+  Transform = Scene.components.TransformComponent(
     Vec3(0, 1, -3)
   ),
-  Light = Scene.components.LightComponent.new({
+  Light = Scene.components.LightComponent({
     color = Vec3(1, 0, 0),
     intensity = 0.1,
     constant = 1.0,
@@ -130,10 +125,10 @@ local pointLight1 = {
 }
 
 local pointLight2 = {
-  Transform = Scene.components.TransformComponent.new(
+  Transform = Scene.components.TransformComponent(
     Vec3(0, 2, -3)
   ),
-  Light = Scene.components.LightComponent.new({
+  Light = Scene.components.LightComponent({
     color = Vec3(0, 1, 1),
     intensity = 0.1,
     constant = 1.0,
@@ -152,10 +147,10 @@ for i = 3, 16 do
   local initialY = 1.5 + math.cos(angle * 2) -- Vary initial height slightly
 
   additionalLights[i] = {
-    Transform = Scene.components.TransformComponent.new(
+    Transform = Scene.components.TransformComponent(
       Vec3(initialX, initialY, initialZ)
     ),
-    Light = Scene.components.LightComponent.new({
+    Light = Scene.components.LightComponent({
       -- Use HSL-like color cycling for variety
       color = Vec3(0.5 * math.sin(angle) + 0.5, 0.5 * math.sin(angle + math.pi * 2 / 3) + 0.5,
         0.5 * math.sin(angle + math.pi * 4 / 3) + 0.5),
@@ -172,8 +167,8 @@ function Scene.init()
   for _, system in pairs(Scene.systems) do
     Scene.world:add(system)
   end
-  -- Scene.world:add(Grid.new())
-  Scene.world:add(VrRig.new())
+  -- Scene.world:add(Grid())
+  -- Scene.world:add(VrRig.new()) -- BORKED
   Scene.world:add(pointLight1)
   Scene.world:add(pointLight2)
   -- Add the other lights
