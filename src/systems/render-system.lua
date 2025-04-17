@@ -63,16 +63,16 @@ function RenderSystem.draw(pass)
         -- handle mesh
         pass:draw(
           mesh.model,
-          transform.localPosition,
-          transform.localScale,
-          transform.localOrientation
+          transform.position,
+          transform.scale,
+          transform.orientation
         )
       elseif text then
         pass:text(
           text.text,
-          transform.localPosition,
+          transform.position,
           text.size,
-          transform.localOrientation,
+          transform.orientation,
           0, -- text.wrap, not implemented
           text.halign,
           text.valign
