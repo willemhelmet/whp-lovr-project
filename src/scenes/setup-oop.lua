@@ -11,6 +11,7 @@ Scene.world = tiny.world()
 -- entities
 local Grid = require 'src.entities.grid'
 local Box = require 'src.entities.box'
+local drawCallsText
 -- WHP: This seems like a great opportunity to use OOP!
 --      The Scene class can have all of these components and systems
 --      already setup, so all i need to do is create an instance
@@ -92,6 +93,17 @@ function Scene.init()
 
     })
   })
+
+
+  drawCallsText = {
+    Transform = Scene.components.TransformComponent(
+      Vec3(0, 2.5, -3)
+    ),
+    Text = Scene.components.TextComponent(
+      'number of draw calls', 0.25
+    )
+  }
+  Scene.world:add(drawCallsText)
 end
 
 function Scene.update(dt)
@@ -100,6 +112,7 @@ end
 
 function Scene.draw(pass)
   Scene.systems.RenderSystem.draw(pass)
+  drawCallsText.Text:setText(Scene.systems.RenderSystem.getDrawCalls(pass))
 end
 
 return Scene

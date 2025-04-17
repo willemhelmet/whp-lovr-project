@@ -88,4 +88,8 @@ function RenderSystem.setUniform(material, uniformName, value)
   end
 end
 
+function RenderSystem.getDrawCalls(pass)
+  return pass:getStats().draws
+end
+
 return RenderSystem

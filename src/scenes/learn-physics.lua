@@ -10,6 +10,7 @@ local Controller = require 'src.entities.controller'
 local Grid = require 'src.entities.grid'
 local Box = require 'src.entities.box'
 local Text = require 'src.entities.text-entitiy'
+local drawCallTextEntity
 
 -- components
 local MaterialComponent = require 'src.components.material-component'
@@ -70,6 +71,16 @@ function LearnPhysics:init()
       }))
     end
   end
+
+  drawCallTextEntity = Text({
+    Transform = TransformComponent(
+      Vec3(0, 2.0, -3)
+    ),
+    Text = TextComponent(
+      'number of draw calls', 0.25
+    )
+  })
+  LearnPhysics.world:add(drawCallTextEntity)
 end
 
 function LearnPhysics.update(dt)
@@ -77,8 +88,9 @@ function LearnPhysics.update(dt)
 end
 
 function LearnPhysics.draw(pass)
-  -- RenderSystem.draw(pass)
-  PhysicsSystem.drawDebug(pass)
+  RenderSystem.draw(pass)
+  drawCallTextEntity.Text:setText(RenderSystem.getDrawCalls(pass))
+  -- PhysicsSystem.drawDebug(pass)
 end
 
 return LearnPhysics
