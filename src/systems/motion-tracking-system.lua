@@ -19,10 +19,14 @@ function MotionTracking.getOrientation(device)
   return Quat(angle, ax, ay, az)
 end
 
--- function MotionTracking.getPose(device)
---   local x, y, z, angle, ax, ay, az = lovr.headset.getPose(device)
---   return Mat4(Vec3(x, y, z), Vec3(1, 1, 1), Quat(angle, ax, ay, az))
--- end
+function MotionTracking.getPose(device)
+  local x, y, z, angle, ax, ay, az = lovr.headset.getPose(device)
+  return Mat4(Vec3(x, y, z), Vec3(1, 1, 1), Quat(angle, ax, ay, az))
+end
+
+function MotionTracking.isTracked(device)
+  return lovr.headset.isTracked(device)
+end
 
 function MotionTracking:process(e, dt)
   local transform = e.Transform

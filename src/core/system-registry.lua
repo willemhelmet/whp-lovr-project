@@ -21,6 +21,7 @@
 local Systems = {
   { require 'src.systems.input-system' },
   { require 'src.systems.motion-tracking-system' },
+  { require 'src.systems.controller-system' },
   { require 'src.systems.grab-system' },
   { require 'src.systems.player-motion-system' },
   { require 'src.systems.transform-system' },

@@ -48,4 +48,10 @@ function TransformComponent:setScale(scale)
   self.dirty = true
 end
 
+function TransformComponent:setPose(pose)
+  self.localPosition = Vec3(pose)
+  self.localOrientation = Quat(pose)
+  self.dirty = true
+end
+
 return TransformComponent

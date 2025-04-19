@@ -4,7 +4,6 @@
 local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 local tablex = require 'lib.pl.tablex'
-local pretty = require 'lib.pl.pretty'
 local Keybinds = require 'config.keybinds'
 
 local InputSystem = tiny.processingSystem()
