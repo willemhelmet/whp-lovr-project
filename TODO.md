@@ -18,3 +18,5 @@
 - [ ] Research (30log.lua)[https://github.com/Yonaba/30log]
 - [ ] Research (Beholder)[https://github.com/kikito/beholder.lua]
 
+## Other
+- [ ] Quick scene switching

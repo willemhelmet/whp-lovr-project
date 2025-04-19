@@ -7,12 +7,6 @@
 
 -- lib
 local tiny = require 'lib.tiny'
-local lovr = require 'lovr'
-local vec3 = lovr.math.vec3
-local Vec3 = lovr.math.newVec3
-local Mat4 = lovr.math.newMat4
-local mat4 = lovr.math.mat4
-local pretty = require 'lib.pl.pretty'
 -- components
 local TransformComponent = require 'src.components.transform-component'
 -- systems

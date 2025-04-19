@@ -22,7 +22,7 @@ function Controller:init(hand)
   self.Pose = Mat4()
   self.Mesh = MeshComponent('/assets/models/quest-' .. hand .. '.glb')
   self.Material = MaterialComponent(nil, {})
-  self.MotionTracking = MotionTrackingComponent.new(hand)
+  self.MotionTracking = MotionTrackingComponent(hand)
   self.Physics = PhysicsComponent({
     isKinematic = true,
     friction = 1.0,

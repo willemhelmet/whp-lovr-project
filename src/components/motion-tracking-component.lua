@@ -7,12 +7,10 @@
 
 local lovr = require 'lovr'
 
-local MotionTrackingComponent = {}
+local MotionTrackingComponent = class('Motion Tracking')
 
-function MotionTrackingComponent.new(device)
-  return {
-    device = device
-  }
+function MotionTrackingComponent:init(device)
+  self.device = device
 end
 
 return MotionTrackingComponent

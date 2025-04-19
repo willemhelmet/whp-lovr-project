@@ -12,12 +12,12 @@ function VRRig:init()
   self.vrRig = {}
   self.vrRig.Name = 'VR Rig'
   self.vrRig.VRRig = {}
-  self.vrRig.Transform = TransformComponent.new()
+  self.vrRig.Transform = TransformComponent()
 
   local vrCamera = {}
   self.vrCamera.Name = "VR Camera"
   self.vrCamera.Transform = TransformComponent()
-  self.vrCamera.MotionTracking = MotionTrackingComponent.new('head')
+  self.vrCamera.MotionTracking = MotionTrackingComponent('head')
   TransformSystem.addChild(self.vrRig.Transform, vrCamera.Transform)
 
   local vrControllerLeft = {}
@@ -25,7 +25,7 @@ function VRRig:init()
   self.vrControllerLeft.Transform = TransformComponent()
   self.vrControllerLeft.Mesh = MeshComponent('/assets/models/quest-left.glb')
   self.vrControllerLeft.Material = MaterialComponent(nil, {})
-  self.vrControllerLeft.MotionTracking = MotionTrackingComponent.new('left')
+  self.vrControllerLeft.MotionTracking = MotionTrackingComponent('left')
   TransformSystem.addChild(self.vrRig.Transform, vrControllerLeft.Transform)
 
   local vrControllerRight = {}
@@ -33,7 +33,7 @@ function VRRig:init()
   self.vrControllerRight.Transform = TransformComponent()
   self.vrControllerRight.Mesh = MeshComponent('/assets/models/quest-right.glb')
   self.vrControllerRight.Material = MaterialComponent(nil, {})
-  self.vrControllerRight.MotionTracking = MotionTrackingComponent.new('right')
+  self.vrControllerRight.MotionTracking = MotionTrackingComponent('right')
   TransformSystem.addChild(self.vrRig.Transform, vrControllerRight.Transform)
 end
 

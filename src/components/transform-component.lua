@@ -27,6 +27,25 @@ function TransformComponent:init(position, orientation, scale)
 
   -- Children table
   self.children = {}
+
+  -- TODO: Implement dirty optimization
+  -- AI: state tracking, used to indicate if world transform needs recalculation
+  self.dirty = true
+end
+
+function TransformComponent:setPosition(position)
+  self.localPosition = position
+  self.dirty = true
+end
+
+function TransformComponent:setOrientation(orientation)
+  self.localOrientation = orientation
+  self.dirty = true
+end
+
+function TransformComponent:setScale(scale)
+  self.localScale = scale
+  self.dirty = true
 end
 
 return TransformComponent

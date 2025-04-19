@@ -2,14 +2,12 @@
 
 -- lib
 local tiny = require 'lib.tiny'
-local pretty = require 'lib.pl.pretty'
 local utils = require 'lib.pl.utils'
 -- scene
 local Scene = {}
 Scene.world = tiny.world()
 -- entities
 local Grid = require 'src.entities.grid'
-local VrRig = require 'src.entities.vr-rig-entity'
 local Suzanne = require 'src.entities.suzanne'
 -- components
 Scene.components = {}
@@ -225,8 +223,8 @@ function Scene.init()
   local x = -2.5
   local y = 1
   local i = 1
-  for row = 1, rows do
-    for col = 1, cols do
+  for _ = 1, rows do
+    for _ = 1, cols do
       x = x + 0.75
       table.insert(suzannes, Scene.generateSuzeanne(x, y, i))
       table.insert(materialLabelLocations, Vec3(x, y + 0.35, -3))

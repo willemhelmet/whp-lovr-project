@@ -6,9 +6,7 @@
 -- The central system for all visual output in the application.
 
 -- lib
-local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
-local pretty = require 'lib.pl.pretty'
 -- systems
 local LightingSystem = require('src.systems.lighting-system')
 
@@ -17,14 +15,6 @@ RenderSystem.filter = tiny.requireAny(
   tiny.requireAll("Transform", "Mesh", "Material"),
   tiny.requireAll("Transform", "Text")
 )
-
--- function RenderSystem:onAdd(e)
--- if e.name then
---   print(e.name)
--- else
---   print(pretty.write(e))
--- end
--- end
 
 function RenderSystem.draw(pass)
   local renderables = RenderSystem.entities

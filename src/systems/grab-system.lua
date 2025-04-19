@@ -5,14 +5,11 @@
 -- the physical connection between controllers and grabbed objects.
 -- Provides the core interaction mechanic for a VR physics playground.
 
-local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 local InputSystem = require 'src.systems.input-system'
 local PhysicsSystem = require 'src.systems.physics-system'
 local MotionTrackingSystem = require 'src.systems.motion-tracking-system'
 local JointComponent = require 'src.components.joint-component'
-
-local pretty = require 'lib.pl.pretty'
 
 local GrabSystem = tiny.processingSystem()
 GrabSystem.filter = tiny.requireAll("Controller")

@@ -5,9 +5,6 @@
 
 -- lib
 local tiny = require 'lib.tiny'
-local pretty = require 'lib.pl.pretty'
-
-local TransformSystem = require 'src.systems.transform-system'
 
 local MotionTracking = tiny.processingSystem()
 MotionTracking.filter = tiny.requireAll("Transform", "MotionTracking")
@@ -22,18 +19,18 @@ function MotionTracking.getOrientation(device)
   return Quat(angle, ax, ay, az)
 end
 
-function MotionTracking.getPose(device)
-  local x, y, z, angle, ax, ay, az = lovr.headset.getPose(device)
-  return Mat4(Vec3(x, y, z), Vec3(1, 1, 1), Quat(angle, ax, ay, az))
-end
+-- function MotionTracking.getPose(device)
+--   local x, y, z, angle, ax, ay, az = lovr.headset.getPose(device)
+--   return Mat4(Vec3(x, y, z), Vec3(1, 1, 1), Quat(angle, ax, ay, az))
+-- end
 
 function MotionTracking:process(e, dt)
   local transform = e.Transform
   local device = e.MotionTracking.device
 
   if (lovr.headset.isTracked(device)) then
-    TransformSystem.setPosition(transform, Vec3(MotionTracking.getPosition(device)))
-    TransformSystem.setOrientation(transform, Quat(MotionTracking.getOrientation(device)))
+    transform:setPosition(Vec3(MotionTracking.getPosition(device)))
+    transform:setOrientation(Quat(MotionTracking.getOrientation(device)))
   end
 end
 
