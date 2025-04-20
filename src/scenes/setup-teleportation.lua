@@ -40,16 +40,16 @@ local motion = {
   walkingSpeed = 4,
   -- Teleport motion parameters
   teleportDistance = 12,
-  blinkTime = 0.5,
+  blinkTime = 0.15,
   blinkStopwatch = math.huge,
   teleportValid = false,
-  targetPosition = lovr.math.newVec3(),
+  targetPosition = Vec3(),
   teleportCurve = lovr.math.newCurve(3),
 }
 
 function motion.teleport(dt)
   -- Teleportation determining target position and executing jump when triggered
-  local handPose = mat4(motion.pose):mul(mat4(lovr.headset.getPose('hand/left/point')))
+  local handPose = mat4(motion.pose):mul(mat4(MotionTrackingSystem.getPose('hand/left/point')))
   local handPosition = vec3(handPose)
   local handDirection = quat(handPose):direction()
   -- Intersect with ground plane
@@ -94,7 +94,6 @@ function motion.drawTeleport(pass)
     pass:cylinder(motion.targetPosition, 0.4, 0.05, math.pi / 2, 1, 0, 0)
     pass:setColor(1, 1, 1)
   end
-  -- lovr.graphics.setLineWidth(4)
   pass:line(motion.teleportCurve:render(30))
   -- Teleport blink, modeled as gaussian function
   local blinkAlpha = math.exp(-(motion.blinkStopwatch / 0.25 / motion.blinkTime) ^ 2)
@@ -153,7 +152,6 @@ function motion.snap(dt)
       motion.thumbstickCooldown = motion.thumbstickCooldownTime
     end
   end
-  -- end
   motion.thumbstickCooldown = motion.thumbstickCooldown - dt
 end
 
@@ -205,6 +203,7 @@ function Scene.draw(pass)
     local poseVR = mat4(motion.pose):mul(poseRW)
     poseVR:scale(radius)
     if hand == 'hand/left' then
+      -- TODO: for some reason I cannot currently get the contorllers to follow the pose
       leftController.Transform:setPose(poseVR)
     end
   end

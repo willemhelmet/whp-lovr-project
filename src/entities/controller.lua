@@ -20,7 +20,8 @@ function Controller:init(hand)
   self.Pose = Mat4()
   self.Mesh = MeshComponent('/assets/models/quest-' .. hand .. '.glb')
   self.Material = MaterialComponent(nil, {})
-  self.MotionTracking = MotionTrackingComponent(hand)
+  -- AI: The motion tracking system conflicts with moving the controllers in VR
+  -- self.MotionTracking = MotionTrackingComponent(hand)
   self.Physics = PhysicsComponent({
     isKinematic = true,
     friction = 1.0,
