@@ -4,6 +4,8 @@
 -- Handles locomotion input (joystick/thumbstick), applies movement in the direction
 -- of gaze or controller orientation, and manages turning (smooth or snap).
 -- Provides the core navigation capabilities for the VR experience.
+--
+-- WHP: NO LONGER USED
 
 -- lib
 local tiny = require 'lib.tiny'

@@ -1,36 +1,36 @@
--- src/systems/teleport-system.lua
+-- src/systems/locomotion-system.lua
 
 local tiny = require 'lib.tiny'
 local MotionTrackingSystem = require 'src.systems.motion-tracking-system'
 local InputSystem = require 'src.systems.input-system'
 local Settings = require 'config.settings'
 
-local TeleportSystem = tiny.processingSystem(class('Teleport System'))
-TeleportSystem.filter = tiny.requireAll('PlayerLocomotion')
+local LocomotionSystem = tiny.processingSystem(class('Teleport System'))
+LocomotionSystem.filter = tiny.requireAll('PlayerLocomotion')
 
-function TeleportSystem:init()
+function LocomotionSystem:init()
   self.motion = nil
 end
 
-function TeleportSystem:onAdd(e)
+function LocomotionSystem:onAdd(e)
   self.motion = e.PlayerLocomotion
 end
 
-function TeleportSystem:process(e, dt)
+function LocomotionSystem:process(e, dt)
   -- Toggle between flying and walking mode
   if InputSystem:getValue('grabLeft') == 1 then
     self.motion.flying = true
   else
     self.motion.flying = false
-    local height = vec3(TeleportSystem:getPose()).y
-    TeleportSystem:getPose():translate(0, -height, 0)
+    local height = vec3(LocomotionSystem:getPose()).y
+    LocomotionSystem:getPose():translate(0, -height, 0)
   end
 
   -- Toggle between snap and smooth turning
   if InputSystem:getValue('grabRight') == 1 then
-    TeleportSystem:snap(dt)
+    LocomotionSystem:snap(dt)
   else
-    TeleportSystem:smooth(dt)
+    LocomotionSystem:smooth(dt)
   end
   -- Teleportation determining target position and executing jump when triggered
   local handPose = mat4(self.motion.pose):mul(mat4(MotionTrackingSystem.getPose('hand/left/point')))
@@ -70,7 +70,7 @@ function TeleportSystem:process(e, dt)
   self.motion.thumbstickCooldown = self.motion.thumbstickCooldown - dt
 end
 
-function TeleportSystem:drawTeleport(pass)
+function LocomotionSystem:drawTeleport(pass)
   -- Teleport target and curve
   pass:setColor(1, 1, 1, 0.1)
   if self.motion.teleportValid then
@@ -85,7 +85,7 @@ function TeleportSystem:drawTeleport(pass)
   pass:fill()
 end
 
-function TeleportSystem:smooth(dt)
+function LocomotionSystem:smooth(dt)
   local turnAmount = InputSystem:getValue('turn').x
   -- Smooth horizontal turning
   if math.abs(turnAmount) > Settings.thumbStickDeadzone then
@@ -113,7 +113,7 @@ function TeleportSystem:smooth(dt)
   end
 end
 
-function TeleportSystem:snap(dt)
+function LocomotionSystem:snap(dt)
   -- Snap horizontal turning
   local x = InputSystem:getValue('turn').x
   if math.abs(x) > self.motion.thumbstickDeadzone and self.motion.thumbstickCooldown < 0 then
@@ -138,7 +138,7 @@ function TeleportSystem:snap(dt)
   self.motion.thumbstickCooldown = self.motion.thumbstickCooldown - dt
 end
 
-function TeleportSystem:getPose()
+function LocomotionSystem:getPose()
   if self.entities and self.entities[1] then
     return self.entities[1].PlayerLocomotion.pose
   else
@@ -146,4 +146,4 @@ function TeleportSystem:getPose()
   end
 end
 
-return TeleportSystem
+return LocomotionSystem
