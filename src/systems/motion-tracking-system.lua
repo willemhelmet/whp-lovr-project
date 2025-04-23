@@ -1,9 +1,5 @@
--- Motion Tracking System: Updates entity transforms based on VR device tracking.
--- Synchronizes the position and orientation of in-game entities with real-world
--- VR controller or headset movements.
--- Essential for controller representation and hand presence in VR.
+-- src/systems/motion-tracking-system.lua
 
--- lib
 local tiny = require 'lib.tiny'
 
 local MotionTracking = tiny.processingSystem()
@@ -26,6 +22,10 @@ end
 
 function MotionTracking.isTracked(device)
   return lovr.headset.isTracked(device)
+end
+
+function MotionTracking.getHands()
+  return lovr.headset.getHands()
 end
 
 function MotionTracking:process(e, dt)

@@ -23,7 +23,8 @@ local Systems = {
   { require 'src.systems.motion-tracking-system' },
   { require 'src.systems.controller-system' },
   { require 'src.systems.grab-system' },
-  { require 'src.systems.player-motion-system' },
+  { require 'src.systems.player-motion-system' }, -- will prob be replaced by teleport system
+  { require 'src.systems.teleport-system' },
   { require 'src.systems.transform-system' },
   { require 'src.systems.physics-system' },
   { require 'src.systems.joint-system' },

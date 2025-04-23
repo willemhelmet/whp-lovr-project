@@ -51,7 +51,7 @@ function PlayerMotionSystem:process(e, dt)
   if Settings.turnStyle == "smooth" then
     -- WHP: I'm not in love with the fact that 'turn' is a vector2 that i
     --      need to extract the correct axis from
-    if turnAmount and math.abs(turnAmount) > Settings.deadzone then
+    if turnAmount and math.abs(turnAmount) > Settings.thumbStickDeadzone then
       local turnSpeed = Settings.smoothTurnSpeed or (2 * math.pi * 1 / 6)
       local rotationAngle = -turnAmount * turnSpeed * dt
       local rotationQuat = lovr.math.quat(rotationAngle, 0, 1, 0)
@@ -76,7 +76,7 @@ function PlayerMotionSystem:process(e, dt)
       playerPose:rotate(rotationQuat)
       playerPose:translate(-pos.x, 0, -pos.z)
       hasTurned = true
-    elseif math.abs(turnAmount) < Settings.deadzone then -- prevent multiple turns
+    elseif math.abs(turnAmount) < Settings.thumbStickDeadzone then -- prevent multiple turns
       hasTurned = false
     end
   end
@@ -95,15 +95,15 @@ function PlayerMotionSystem:process(e, dt)
   -- Calculate movement vector
   local movement = lovr.math.vec3(0, 0, 0)
 
-  if moveAmount and math.abs(moveAmount.x) > Settings.deadzone or moveAmount and math.abs(moveAmount.y) > Settings.deadzone then
+  if moveAmount and math.abs(moveAmount.x) > Settings.thumbStickDeadzone or moveAmount and math.abs(moveAmount.y) > Settings.thumbStickDeadzone then
     -- Forward/backward movement
-    if math.abs(moveAmount.y) > Settings.deadzone then
+    if math.abs(moveAmount.y) > Settings.thumbStickDeadzone then
       local forward = direction * moveAmount.y
       movement:add(forward)
     end
 
     -- Strafe movement
-    if math.abs(moveAmount.x) > Settings.deadzone then
+    if math.abs(moveAmount.x) > Settings.thumbStickDeadzone then
       local right = direction:cross(lovr.math.vec3(0, 1, 0))
       local strafe = right * moveAmount.x
       movement:add(strafe)

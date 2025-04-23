@@ -8,7 +8,8 @@
 -- lib
 local tiny = require 'lib.tiny'
 -- systems
-local LightingSystem = require('src.systems.lighting-system')
+local LightingSystem = require 'src.systems.lighting-system'
+local TeleportSystem = require 'src.systems.teleport-system'
 
 local RenderSystem = tiny.processingSystem()
 RenderSystem.filter = tiny.requireAny(
@@ -20,6 +21,7 @@ function RenderSystem.draw(pass)
   local renderables = RenderSystem.entities
 
   if renderables then
+    pass:transform(mat4(TeleportSystem:getPose()):invert())
     for _, renderable in pairs(renderables) do
       local transform = renderable.Transform
 
@@ -69,6 +71,8 @@ function RenderSystem.draw(pass)
         )
       end
     end
+    pass:setShader()
+    TeleportSystem:drawTeleport(pass)
   end
 end
 
