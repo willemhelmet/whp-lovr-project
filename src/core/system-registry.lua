@@ -1,6 +1,6 @@
 -- src/core/system-registry.lua
 
--- WHP: unordered table of systems
+-- unordered table of systems
 --      pro: easy to access a system
 --      con: no order
 -- local Systems = {
@@ -15,8 +15,8 @@
 --   RenderSystem = require 'src.systems.render-system',
 -- }
 
--- WHP: Ordered table of systems
---      pro: ordered, easy to set processing order for tiny
+-- Ordered table of systems
+--      pro: ordered, easy to set processing order for tinyECS
 --      con: more repetitive actions to access a System
 local Systems = {
   { require 'src.systems.input-system' },
