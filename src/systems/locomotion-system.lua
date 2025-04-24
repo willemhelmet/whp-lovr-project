@@ -64,25 +64,6 @@ function LocomotionSystem:process(e, dt)
   motion.thumbstickCooldown = motion.thumbstickCooldown - dt
 end
 
-function LocomotionSystem:drawTeleport(pass)
-  local entities = self.entities
-  if #entities > 0 and entities[1].PlayerLocomotion then
-    local motion = entities[1].PlayerLocomotion
-    -- Teleport target and curve
-    pass:setColor(1, 1, 1, 0.1)
-    if motion.teleportValid then
-      pass:setColor(1, 1, 0)
-      pass:cylinder(motion.targetPosition, 0.4, 0.05, math.pi / 2, 1, 0, 0)
-      pass:setColor(1, 1, 1)
-    end
-    pass:line(motion.teleportCurve:render(30))
-    -- Teleport blink, modeled as gaussian function
-    local blinkAlpha = math.exp(-(motion.blinkStopwatch / 0.25 / motion.blinkTime) ^ 2)
-    pass:setColor(0, 0, 0, blinkAlpha)
-    pass:fill()
-  end
-end
-
 function LocomotionSystem:smooth(e, dt)
   local motion = e.PlayerLocomotion
   local turnAmount = InputSystem:getValue('turn').x
@@ -136,6 +117,25 @@ function LocomotionSystem:snap(e, dt)
     end
   end
   motion.thumbstickCooldown = motion.thumbstickCooldown - dt
+end
+
+function LocomotionSystem:drawTeleport(pass)
+  local entities = self.entities
+  if #entities > 0 and entities[1].PlayerLocomotion then
+    local motion = entities[1].PlayerLocomotion
+    -- Teleport target and curve
+    pass:setColor(1, 1, 1, 0.1)
+    if motion.teleportValid then
+      pass:setColor(1, 1, 0)
+      pass:cylinder(motion.targetPosition, 0.4, 0.05, math.pi / 2, 1, 0, 0)
+      pass:setColor(1, 1, 1)
+    end
+    pass:line(motion.teleportCurve:render(30))
+    -- Teleport blink, modeled as gaussian function
+    local blinkAlpha = math.exp(-(motion.blinkStopwatch / 0.25 / motion.blinkTime) ^ 2)
+    pass:setColor(0, 0, 0, blinkAlpha)
+    pass:fill()
+  end
 end
 
 function LocomotionSystem:getPose()

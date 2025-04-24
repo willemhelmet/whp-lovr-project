@@ -17,7 +17,7 @@ function ControllerSystem:onAdd(e)
 end
 
 function ControllerSystem:process(e)
-  if LocomotionSystem.motion then
+  if LocomotionSystem:getPose() then
     for _, hand in ipairs(ControllerSystem:getControllers()) do
       -- Whenever pose of hand or head is used, need to account for VR movement
       local poseRW = mat4(MotionTrackingSystem.getPose(hand))
