@@ -1,6 +1,7 @@
 -- src/systems/controller-system.lua
 
 local tiny = require 'lib.tiny'
+
 local ControllerSystem = tiny.processingSystem(class('Controller System'))
 ControllerSystem.filter = tiny.requireAny("Hand")
 

@@ -11,7 +11,7 @@ local tiny = require 'lib.tiny'
 local LightingSystem = require 'src.systems.lighting-system'
 local LocomotionSystem = require 'src.systems.locomotion-system'
 
-local RenderSystem = tiny.processingSystem()
+local RenderSystem = tiny.processingSystem(class('Render System'))
 RenderSystem.filter = tiny.requireAny(
   tiny.requireAll("Transform", "Mesh", "Material"),
   tiny.requireAll("Transform", "Text")

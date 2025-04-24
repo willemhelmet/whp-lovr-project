@@ -8,9 +8,8 @@ local Vec3 = lovr.math.newVec3
 local Quat = lovr.math.newQuat
 local Mat4 = lovr.math.newMat4
 local tiny = require 'lib.tiny'
-local pretty = require 'lib.pl.pretty'
 
-local TransformSystem = tiny.processingSystem()
+local TransformSystem = tiny.processingSystem(class('Transform System'))
 TransformSystem.filter = tiny.requireAll("Transform")
 
 -- function TransformSystem:onAdd(e)

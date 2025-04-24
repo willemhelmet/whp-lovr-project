@@ -5,8 +5,9 @@ local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 local tablex = require 'lib.pl.tablex'
 local Keybinds = require 'config.keybinds'
+local class = require 'lib.30log'
 
-local InputSystem = tiny.processingSystem()
+local InputSystem = tiny.processingSystem(class('Input System'))
 -- InputSystem.filter = tiny.requireAll('Input') -- Assuming entities have an inputComponent
 
 InputSystem.states = {}

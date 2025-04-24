@@ -2,7 +2,7 @@
 
 local tiny = require 'lib.tiny'
 
-local MotionTracking = tiny.processingSystem()
+local MotionTracking = tiny.processingSystem(class('Motion Tracking System'))
 MotionTracking.filter = tiny.requireAll("Transform", "MotionTracking")
 
 function MotionTracking.getPosition(device)

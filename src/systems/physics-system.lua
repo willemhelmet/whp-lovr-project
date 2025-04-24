@@ -10,7 +10,7 @@ local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 local phywire = require 'lib.phywire'
 
-local PhysicsSystem = tiny.processingSystem()
+local PhysicsSystem = tiny.processingSystem(class('Physics System'))
 PhysicsSystem.filter = tiny.requireAll('Physics', 'Transform')
 
 local TransformSystem = require 'src.systems.transform-system'

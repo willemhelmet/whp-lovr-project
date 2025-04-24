@@ -10,7 +10,7 @@ local lovr = require 'lovr'
 local tiny = require 'lib.tiny'
 local pretty = require 'lib.pl.pretty'
 
-local JointSystem = tiny.processingSystem()
+local JointSystem = tiny.processingSystem(class('Joint System'))
 -- AI: Suggests that 'Physics' is not necessary.
 JointSystem.filter = tiny.requireAll("Joint", "Physics")
 

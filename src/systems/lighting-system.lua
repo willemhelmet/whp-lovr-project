@@ -4,7 +4,7 @@ local lovr = require 'lovr'
 local Vec4 = lovr.math.newVec4
 local tiny = require 'lib.tiny'
 local pretty = require 'lib.pl.pretty'
-local LightingSystem = tiny.processingSystem()
+local LightingSystem = tiny.processingSystem(class('Lighting System'))
 LightingSystem.filter = tiny.requireAll('Transform', 'Light')
 
 local MAX_LIGHTS = 16

@@ -11,7 +11,7 @@ local PhysicsSystem = require 'src.systems.physics-system'
 local MotionTrackingSystem = require 'src.systems.motion-tracking-system'
 local JointComponent = require 'src.components.joint-component'
 
-local GrabSystem = tiny.processingSystem()
+local GrabSystem = tiny.processingSystem(class('Grab System'))
 GrabSystem.filter = tiny.requireAll("Controller")
 
 local controllerLeft
